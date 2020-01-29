@@ -4,58 +4,70 @@ from numpy.linalg import eig
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-#dataset must be numpy array
-def fit(dataset):
-	#find mean of each feature
-	#deduct mean of each feature from dataset
-	datasetMean = np.mean(dataset, axis=0)
-	dataset = dataset - datasetMean
+class PCA:
+	def __init__(self, n_components = 1):
+		self.coVarianceExplanation = n_components
+		self.reducedPrincipalComponents = None
+		self.datasetMean = None
+		self.isFitted = False
 
-	#find covariance matrix
-	covMatrix = dataset.cov()
+	#dataset must be numpy array
+	def fit(self, dataset):
+		if not isinstance(dataset, pd.DataFrame):
+			raise Exception('inputPDF should be a pandas DataFrame!')
+		#find mean of each feature
+		#deduct mean of each feature from dataset
+		self.datasetMean = np.mean(dataset, axis=0)
+		dataset = dataset - self.datasetMean
 
-	#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
-	# covMatrixDet = determinants(covMatrix)
-	eigValues, eigVectors = eig(covMatrix)
-	absEigValues = list(map(lambda x: abs(x), eigValues))
-	principalComponents = []
-	for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
-		principalComponents.append({
-			'eigValue': eigValue,
-			'absEigValue': absEigValue,
-			'eigVector': eigVector
-			})
+		#find covariance matrix
+		covMatrix = dataset.cov()
 
-	eigenValuesSum = sum(absEigValues)
+		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
+		eigValues, eigVectors = eig(covMatrix)
+		absEigValues = list(map(lambda x: abs(x), eigValues))
+		principalComponents = []
+		for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
+			principalComponents.append({
+				'eigValue': eigValue,
+				'absEigValue': absEigValue,
+				'eigVector': eigVector
+				})
 
-	varianceExplanation = 0.7
-	
-	varianceAggregator = 0
-	componentsToKeep=0
-	while (varianceAggregator/eigenValuesSum) < varianceExplanation:
-		varianceAggregator+=principalComponents[componentsToKeep]['absEigValue']
-		componentsToKeep+=1
+		eigenValuesSum = sum(absEigValues)
+		
+		varianceAggregator = 0
+		componentsToKeep=0
+		while (varianceAggregator/eigenValuesSum) < self.coVarianceExplanation:
+			varianceAggregator+=principalComponents[componentsToKeep]['absEigValue']
+			componentsToKeep+=1
 
-	# print('Components to keep: ' + str(componentsToKeep))
-	reducedPrincipalComponents = principalComponents[:componentsToKeep]
+		self.reducedPrincipalComponents = principalComponents[:componentsToKeep]
 
-	# print("reducedPrincipalComponent: ")
-	# pp.pprint(reducedPrincipalComponents)
+		# print('Components to keep: ' + str(componentsToKeep))
+		# print("reducedPrincipalComponent: ")
+		# pp.pprint(reducedPrincipalComponents)
 
-	return reducedPrincipalComponents, datasetMean
+		self.isFitted = True
 
-def transform(iVectorsTestPDF, reducedPrincipalComponents, datasetMean):
-	#normalise test data
-	iVectorsTestPDF -= datasetMean
-	#project test data to eigenspace
-		#iterate through each dataframe row
-	projValues = []
-	for index, row in iVectorsTestPDF.iterrows():
-		projValue = []
-		for component in reducedPrincipalComponents:
-			projValueDim = component['eigVector'].dot(row)
-			projValue.append(projValueDim)
-		projValues.append(projValue)
-	print("\n\nprojValues: ")
-	pp.pprint(projValues)
-	return projValues
+	def transform(self, inputPDF):
+		if not self.isFitted:
+			raise Exception('PCA model is not fitted yet! Run PCA.fit() first.')
+		if not isinstance(inputPDF, pd.DataFrame):
+			raise Exception('inputPDF should be a pandas DataFrame!')
+
+		#normalise test data
+		inputPDF -= self.datasetMean
+		#project test data to eigenspace
+		projValues = []
+		# print('inputPDF' + str(inputPDF))
+
+		projValues = []
+		for component in self.reducedPrincipalComponents:
+			#use 0 index as dot product returns array
+			projValue = component['eigVector'].dot(inputPDF)[0] 
+			projValues.append(projValue)
+
+		# print("\n\nprojValues: ")
+		# pp.pprint(projValues)
+		return projValues
