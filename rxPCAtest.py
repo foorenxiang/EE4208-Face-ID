@@ -33,13 +33,17 @@ def main():
 			print("Unable to find image for " + person)
 
 		iVectorDict[person] = subImage.flatten('C')
+		# print('iVectorDict[person]')
+		# print(iVectorDict[person])
 	print("iVectorDict keys: " + str(list(iVectorDict.keys())) )
 	print("# keys in iVectorDict: " + str(len(iVectorDict)))
 	iVectorsPDF = pd.DataFrame(list(iVectorDict.values()))
 
 	#train test split
-	iVectorsTrainPDF = iVectorsPDF[:-2] #train data
-	iVectorsTestPDF = iVectorsPDF[-2:] #test data
+	iVectorsTrainPDF = iVectorsPDF[:-1] #train data
+	iVectorsTestPDF = iVectorsPDF[-1:] #test data
+	# print('iVectorsTestPDF')
+	# print(iVectorsTestPDF)
 	
 	#fit principal components of dataset
 	pcaModel = PCA(n_components=0.7)

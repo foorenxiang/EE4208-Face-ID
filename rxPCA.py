@@ -56,6 +56,12 @@ class PCA:
 		if not isinstance(inputPDF, pd.DataFrame):
 			raise Exception('inputPDF should be a pandas DataFrame!')
 
+		#check if inputPDF should be transposed
+		try:
+			self.reducedPrincipalComponents[0]['eigVector'].dot(inputPDF)[0]
+		except ValueError:
+			inputPDF = inputPDF.T
+
 		#normalise test data
 		inputPDF -= self.datasetMean
 		#project test data to eigenspace
