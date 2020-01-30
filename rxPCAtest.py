@@ -40,8 +40,8 @@ def main():
 	iVectorsPDF = pd.DataFrame(list(iVectorDict.values()))
 
 	#train test split
-	iVectorsTrainPDF = iVectorsPDF[:-1] #train data
-	iVectorsTestPDF = iVectorsPDF[-1:] #test data
+	iVectorsTrainPDF = iVectorsPDF[:-3] #train data
+	iVectorsTestPDF = iVectorsPDF[-3:] #test data
 	# print('iVectorsTestPDF')
 	# print(iVectorsTestPDF)
 	
@@ -50,7 +50,8 @@ def main():
 	pcaModel.fit(iVectorsTrainPDF)
 
 	#transform test data from image space to eigenspace
-	pcaModel.transform(iVectorsTestPDF)
+	for index,sample in iVectorsTestPDF.iterrows():
+		pcaModel.transform(pd.DataFrame(sample))
 
 	plt.imshow(subImage, cmap='gray')
 

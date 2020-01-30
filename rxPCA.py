@@ -12,6 +12,8 @@ class PCA:
 		self.isFitted = False
 
 	#dataset must be numpy array
+	#each subImage is stored as a row in the pandas dataframe
+	#each pixel of a subImage is stored in a series
 	def fit(self, dataset):
 		if not isinstance(dataset, pd.DataFrame):
 			raise Exception('inputPDF should be a pandas DataFrame!')
@@ -19,7 +21,13 @@ class PCA:
 		#deduct mean of each feature from dataset
 		self.datasetMean = np.mean(dataset, axis=0)
 		dataset = dataset - self.datasetMean
-
+		# print('dataset')
+		# print(dataset)
+		# print('dataset.iloc[[0]]')
+		# print(dataset.iloc[[0]])
+		# print('dataset.iloc[[0:2]]')
+		# print(dataset.iloc[[0,1]])
+		
 		#find covariance matrix
 		covMatrix = dataset.cov()
 
@@ -54,6 +62,7 @@ class PCA:
 		if not self.isFitted:
 			raise Exception('PCA model is not fitted yet! Run PCA.fit() first.')
 		if not isinstance(inputPDF, pd.DataFrame):
+			print('inputPDF type: ' + str(type(inputPDF)))
 			raise Exception('inputPDF should be a pandas DataFrame!')
 
 		#check if inputPDF should be transposed
