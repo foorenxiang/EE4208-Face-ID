@@ -4,12 +4,15 @@ https://towardsdatascience.com/a-guide-to-face-detection-in-python-3eab0f6b9fc1
 https://medium.com/@sebastiannorena/pca-principal-components-analysis-applied-to-images-of-faces-d2fc2c083371
 '''
 
+#use python3 command to execute!
+
 import cv2
 import matplotlib.pyplot as plt
 import dlib
 from imutils import face_utils
 
-from sklearn.decomposition import PCA
+# from sklearn.decomposition import PCA
+from rxPCA import PCA
 import numpy as np
 import pandas as pd
 from joblib import dump, load
@@ -27,8 +30,6 @@ smileCascade = cv2.CascadeClassifier(smilePath)
 
 import glob
 import random
-# path = "./input/caspeal/"
-# files = glob.glob(path+"*.tif")
 path = "./input/"
 fileExt = ".jpg"
 files = glob.glob(path+"*"+fileExt)
@@ -59,15 +60,16 @@ processedFiles = list()
 if faceDictLoad == False:
     for file in files:
         input = file
-        input = input.split('_') #convert to this instead
-        person = input[0][len(path):] #class
+        # input = input.split('_') #convert to this instead
+        # person = input[0][len(path):] #class
         # subclass = input[1].split('.')[0] #type of photo
+        person = input[len(path):-len(fileExt)]
         print("Person:")
         print(person)
         gray = cv2.imread(file,0)
         
         # Detect faces in input image
-        faces = faceCascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5,flags=cv2.CASCADE_SCALE_IMAGE)
+        faces = faceCascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=8,flags=cv2.CASCADE_SCALE_IMAGE)
         print("Count of faces: " + str(len(faces)))
 
         face = None
@@ -129,7 +131,7 @@ else:
 if pcaModelLoad == False:
     #determing principal components
     print("Performing PCA on dataset")
-    pcaModel = PCA(n_components=0.9)
+    pcaModel = PCA(n_components=.95)
     facesPDF = pd.DataFrame(list(iVectorDict.values()))
     print("number of detected faces")
     print(len(facesPDF))
@@ -143,96 +145,26 @@ if pcaDataLoad == False:
     print("Calcuating Principal Components of faces")
     for person in iVectorDict:
         pcDict[person] = pcaModel.transform(pd.DataFrame(list(iVectorDict[person])))
+        print(person)
+        print(pcDict[person])
 
     pcDict['useZeroMean'] = useZeroMean
     pcDict['dim'] = dim
     dump(pcDict, 'pcDict.bin')
     del pcDict['useZeroMean'] 
+    del pcDict['dim'] 
     print("number of trained faces")
     print(len(pcDict))
 else:
     print("Loading pcDict from disk")
     pcDict = load('pcDict.bin')
 
-if ELMLoad == False:
-    pass
-
-    #implement train test split when more inputs are available per face
-    # trainPercentage = 0.7
-    # trainingDataTrain = trainingDataPDF[:int(trainPercentage*len(trainingDataPDF))]
-    # trainingDataTest = trainingDataPDF[int(trainPercentage*len(trainingDataPDF)):]
-    # # trainX <-- training observations [# points, # features]
-    # # trainy <-- training labels [# points]
-    # # testX <-- test observations [# points, # features]
-    # # testy <-- test labels [# points]
-
-    # trainX = trainingDataTrain.copy()
-    # trainX.drop(['GPSspeedkph'], axis=1, inplace = True)
-    # ###APPLYING NORMALISATION TO DATASET AS REQUIRED BY ELM
-    # trainX = StandardScaler().fit_transform(trainX)
-    # trainy = trainingDataTrain["GPSspeedkph"]
-    # trainy = trainy.astype('int')
-    # # Index(['timeDeltaus', 'currentSampleHz', 'timeus', 'rcCommand0', 'rcCommand1',
-    #        # 'rcCommand2', 'rcCommand3', 'vbatLatestV', 'gyroADC0', 'gyroADC1',
-    #        # 'gyroADC2', 'accSmooth0', 'accSmooth1', 'accSmooth2', 'motor0',
-    #        # 'motor1', 'motor2', 'motor3'],
-    #       # dtype='object')
-
-    # testX = trainingDataTest.copy()
-    # testX.drop(['GPSspeedkph'], axis=1, inplace = True)
-    # ###APPLYING NORMALISATION TO DATASET AS REQUIRED BY ELM
-    # testX = StandardScaler().fit_transform(testX)
-    # testy = trainingDataTest["GPSspeedkph"]
-
-    # #########from plot_elm_comparison.p#########
-    # kernel_names = ["tanh", "tribas", "hardlim", "rbf(0.1)"]
-    # model_names = list(map(lambda name: name+"GPSSpeedModel", kernel_names))
-    # nh = 10
-
-    # # pass user defined transfer func
-    # sinsq = (lambda x: np.power(np.sin(x), 2.0))
-    # srhl_sinsq = SimpleRandomHiddenLayer(n_hidden=nh,
-    #                                      activation_func=sinsq,
-    #                                      random_state=0)
-
-    # # use internal transfer funcs
-    # srhl_tanh = SimpleRandomHiddenLayer(n_hidden=nh,
-    #                                     activation_func='tanh',
-    #                                     random_state=0)
-
-    # srhl_tribas = SimpleRandomHiddenLayer(n_hidden=nh,
-    #                                       activation_func='tribas',
-    #                                       random_state=0)
-
-    # srhl_hardlim = SimpleRandomHiddenLayer(n_hidden=nh,
-    #                                        activation_func='hardlim',
-    #                                        random_state=0)
-
-    # # use gaussian RBF
-    # srhl_rbf = RBFRandomHiddenLayer(n_hidden=nh*2, gamma=0.1, random_state=0)
-
-    # log_reg = LogisticRegression(solver='liblinear')
-
-    # classifiers = [ELMClassifier(srhl_tanh), ELMClassifier(srhl_tribas),ELMClassifier(srhl_hardlim),ELMClassifier(srhl_rbf)]
-    # #########from plot_elm_comparison.p#########
-
-    # #########only fit rbf kernel#########
-
-    # model = ELMClassifier(srhl_rbf)
-    # model.fit(trainX, trainy)
-
 print("Keys of pcDict:")
 print(pcDict.keys())
 
-#test PCA dictionary
-# randPerson = 'Jack'
-# testFile = path+'jack1'+".png"
 randPerson = random.choice(list(pcDict.keys()))
 testFile = path+randPerson+".jpg"
 testImg = cv2.imread(testFile,0)
-# plt.figure(figsize=(8,8))
-# plt.imshow(testImg, cmap='gray')
-# plt.show()
 
 faces = faceCascade.detectMultiScale(testImg, scaleFactor=1.1, minNeighbors=5,flags=cv2.CASCADE_SCALE_IMAGE)
 face = None
@@ -276,6 +208,3 @@ if len(faces):
         print("Correct match!")
     else:
         print("Wrong identification. Correct person is: " + randPerson)
-
-# print("Number of faces loaded: " + str(len(faceDict)))
-# print("Number of faces processed: " + str(len(pcDict)))

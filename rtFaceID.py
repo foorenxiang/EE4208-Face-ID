@@ -4,13 +4,16 @@ https://towardsdatascience.com/a-guide-to-face-detection-in-python-3eab0f6b9fc1
 https://medium.com/@sebastiannorena/pca-principal-components-analysis-applied-to-images-of-faces-d2fc2c083371
 '''
 
+#use python3 command to execute!
+
 import cv2
 
 import matplotlib.pyplot as plt
 import dlib
 from imutils import face_utils
 
-from sklearn.decomposition import PCA
+# from sklearn.decomposition import PCA
+from rxPCA import PCA
 import numpy as np
 import pandas as pd
 from joblib import load
@@ -56,6 +59,8 @@ try:
 except KeyError:
     dim = (100, 100) #width, height
 
+unknownPersonErrorThreshold = 210000
+
 while 1:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
@@ -63,9 +68,9 @@ while 1:
 
     faces = faceCascade.detectMultiScale(
         gray,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(200, 200),
+        scaleFactor=1.7,
+        minNeighbors=3,
+        minSize=(150, 150),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 
@@ -134,23 +139,19 @@ while 1:
         for person in pcDict:
             #get error between the PCA and perform SSD
             SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
-            SSD = np.sum(np.subtract(facePC[:,:maxPrincipalComponents], pcDict[person][:,:maxPrincipalComponents]).flatten()**2)
 
             if SSD< currentError:
                 currentError = SSD
                 guess = person
 
+        if currentError>unknownPersonErrorThreshold:
+            guess = "Unknown person"
         print("Guessed person: " + guess)
         print("SSD Error: " + str(currentError))
-        renXiangError = np.sum(np.subtract(facePC[:,:maxPrincipalComponents], pcDict['FOO REN XIANG.jpg'][:,:maxPrincipalComponents]).flatten()**2)
-        print('Error from "FOO REN XIANG": ' + str(renXiangError))
-        print("Delta between renXiangError and SSDError: " + str(renXiangError - currentError))
+        rxSSD = np.sum(np.subtract(facePC, pcDict['RX_10']).flatten()**2)
         cv2.putText(frame, guess ,(x, y), font, 1,(255,0,0),5)
 
-        np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
         cv2.imshow('subImage', subImage)
-        # zeroMeanSubImage = subImage - np.mean(subImage)
-        # cv2.imshow('subImage', zeroMeanSubImage)
 
     print("Number of faces detected:")
     print(len(faces))

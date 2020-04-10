@@ -1,11 +1,15 @@
 import numpy as np
 import pandas as pd
-from numpy.linalg import eig
+from scipy.linalg import eigh
+from scipy.sparse.linalg import eigsh
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
+def strFloat(floatVal):
+	return "{0:.2f}".format(round(floatVal,2))
+
 class PCA:
-	def __init__(self, n_components = 1):
+	def __init__(self, n_components = 0.9):
 		self.coVarianceExplanation = n_components
 		self.reducedPrincipalComponents = None
 		self.datasetMean = None
@@ -29,10 +33,11 @@ class PCA:
 		# print(dataset.iloc[[0,1]])
 		
 		#find covariance matrix
-		covMatrix = dataset.cov()
+		covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
 
 		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
-		eigValues, eigVectors = eig(covMatrix)
+		eigValues, eigVectors = eigh(covMatrix)
+		# eigValues, eigVectors = eigsh(covMatrix,k=100)
 		absEigValues = list(map(lambda x: abs(x), eigValues))
 		principalComponents = []
 		for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
@@ -43,18 +48,33 @@ class PCA:
 				})
 
 		eigenValuesSum = sum(absEigValues)
+
+		print("absEigValues")
 		
-		varianceAggregator = 0
 		componentsToKeep=0
-		while (varianceAggregator/eigenValuesSum) < self.coVarianceExplanation:
-			varianceAggregator+=principalComponents[componentsToKeep]['absEigValue']
-			componentsToKeep+=1
+		if self.coVarianceExplanation<float(1):
+			varianceAggregator = 0
+			while (varianceAggregator/eigenValuesSum) < self.coVarianceExplanation:
+				varianceAggregator+=principalComponents[componentsToKeep]['absEigValue']
+				print(principalComponents[componentsToKeep]['absEigValue'])
+				componentsToKeep+=1
+			print("With " + str(self.coVarianceExplanation*100) + "% covariance explanation specified, " + str(componentsToKeep) + " principal components are required")
+		else:
+			componentsToKeep = int(self.coVarianceExplanation)
+
+			totalEigValuesUsed = sum(principalComponent['absEigValue'] for principalComponent in principalComponents[:self.coVarianceExplanation])
+
+			totalEigValuesPresent = sum(principalComponent['absEigValue'] for principalComponent in principalComponents)
+
+			# print(principalComponents[componentsToKeep]['absEigValue'])
+
+			print("With " + str(componentsToKeep) + " principal components specified, " + strFloat(totalEigValuesUsed/totalEigValuesPresent*100) + "% covariance is explained")
 
 		self.reducedPrincipalComponents = principalComponents[:componentsToKeep]
 
 		# print('Components to keep: ' + str(componentsToKeep))
 		# print("reducedPrincipalComponent: ")
-		# pp.pprint(reducedPrincipalComponents)
+		# pp.pprint(self.reducedPrincipalComponents)
 
 		self.isFitted = True
 
@@ -81,6 +101,8 @@ class PCA:
 		for component in self.reducedPrincipalComponents:
 			#use 0 index as dot product returns array
 			projValue = component['eigVector'].dot(inputPDF)[0] 
+			# print("projValue")
+			# print(projValue)
 			projValues.append(projValue)
 
 		# print("\n\nprojValues: ")
