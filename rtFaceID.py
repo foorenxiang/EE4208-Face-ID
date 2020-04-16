@@ -39,6 +39,8 @@ pcaModel = load('pcaModel.bin')
 print("Loading pcDict from disk")
 pcDict = load('pcDict.bin')
 
+personClassifierModel = load('svcModel.bin')
+expressionClassifierModel = load('svcExpressionsModel.bin')
 
 #get from pcDict if useZeroMean is enabled
 useZeroMean = False
@@ -132,37 +134,38 @@ while 1:
         #required
         facePC = pcaModel.transform(pd.DataFrame(list(faceIVector)))
 
-        #apply SSD to guess person
-        guess = float('inf')
-        currentError = float('inf')
-        for person in pcDict:
-            #get error between the PCA and perform SSD
-            SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
+        # #apply SSD to guess person
+        # guess = float('inf')
+        # currentError = float('inf')
+        # for person in pcDict:
+        #     #get error between the PCA and perform SSD
+        #     SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
 
-            if SSD< currentError:
-                currentError = SSD
-                guess = person
+        #     if SSD< currentError:
+        #         currentError = SSD
+        #         guess = person
 
-        if currentError>unknownPersonErrorThreshold:
-            guess = "Unknown person"
+        # if currentError>unknownPersonErrorThreshold:
+        #     guess = "Unknown person"
 
-        guess = guess.split('_')[0]
-        print("Guessed person: " + guess.split('_')[0])
-        print("SSD Error: " + str(currentError))
-        # rxSSD = np.sum(np.subtract(facePC, pcDict['RX_10']).flatten()**2)
+        # guess = guess.split('_')[0]
+        # print("Guessed person: " + guess.split('_')[0])
+        # print("SSD Error: " + str(currentError))
 
-        # from sklearn.svm import SVC as classifier
-        # model = load('svcModel.bin')
-        # facePC = np.array(facePC)
-        # facePC = facePC.reshape(1, -1)
-        # facePC.astype(float)
-        # print(facePC)
-        # guess = "NULL"
-        # guess = model.predict(facePC)
-        # print("Guessed person: " + guess)
+        #must enlist sample before feeding to model
+        personGuess = personClassifierModel.predict([facePC])
+        #take first result from singleton list
+        personGuess = personGuess[0]
 
+        #must enlist sample before feeding to model
+        expressionGuess = expressionClassifierModel.predict([facePC])
+        #take first result from singleton list
+        expressionGuess = expressionGuess[0]
 
-        cv2.putText(frame, guess ,(x, y), font, 1,(255,0,0),5)
+        print("Guessed person: " + personGuess)
+        print("Guessed expression: " + expressionGuess)
+
+        cv2.putText(frame, personGuess + '(' + expressionGuess +')' ,(x, y), font, 1,(255,0,0),5)
 
         cv2.imshow('subImage', subImage)
 
