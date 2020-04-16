@@ -38,4 +38,6 @@ fitted PCA 100 x 100 res 60 components/
 input/
 inputsuffixed copy/
 venv/
-
+*.jpg
+*.png
+*.tif
