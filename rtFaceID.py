@@ -162,6 +162,20 @@ while 1:
         #take first result from singleton list
         expressionGuess = expressionGuess[0]
 
+        #apply SSD to guess person
+        currentError = float('inf')
+        for person in pcDict:
+            if personGuess in person:
+            #get error between the PCA and perform SSD
+                SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
+
+                if SSD<currentError:
+                    currentError = SSD
+
+        print('Squared Euclidean Distance: ' + str(currentError))
+        if currentError>unknownPersonErrorThreshold:
+            personGuess = "Unknown Person"
+
         print("Guessed person: " + personGuess)
         print("Guessed expression: " + expressionGuess)
 
