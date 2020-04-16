@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 from scipy.linalg import eigh
 from scipy.sparse.linalg import eigsh
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
 
 def strFloat(floatVal):
 	return "{0:.2f}".format(round(floatVal,2))
@@ -25,19 +23,12 @@ class PCA:
 		#deduct mean of each feature from dataset
 		self.datasetMean = np.mean(dataset, axis=0)
 		dataset = dataset - self.datasetMean
-		# print('dataset')
-		# print(dataset)
-		# print('dataset.iloc[[0]]')
-		# print(dataset.iloc[[0]])
-		# print('dataset.iloc[[0:2]]')
-		# print(dataset.iloc[[0,1]])
 		
 		#find covariance matrix
 		covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
 
 		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
 		eigValues, eigVectors = eigh(covMatrix)
-		# eigValues, eigVectors = eigsh(covMatrix,k=100)
 		print("eigVectors.shape")
 		print(eigVectors.shape)
 		absEigValues = list(map(lambda x: abs(x), eigValues))
@@ -72,10 +63,6 @@ class PCA:
 
 		self.reducedPrincipalComponents = principalComponents[:componentsToKeep]
 
-		# print('Components to keep: ' + str(componentsToKeep))
-		# print("reducedPrincipalComponent: ")
-		# pp.pprint(self.reducedPrincipalComponents)
-
 		self.isFitted = True
 
 	def transform(self, inputPDF):
@@ -94,17 +81,11 @@ class PCA:
 		#normalise test data
 		inputPDF -= self.datasetMean
 		#project test data to eigenspace
-		projValues = []
-		# print('inputPDF' + str(inputPDF))
 
 		projValues = []
 		for component in self.reducedPrincipalComponents:
 			#use 0 index as dot product returns array
 			projValue = component['eigVector'].dot(inputPDF)[0]
-			# print("projValue")
-			# print(projValue)
 			projValues.append(projValue)
 
-		# print("\n\nprojValues: ")
-		# pp.pprint(projValues)
 		return projValues
