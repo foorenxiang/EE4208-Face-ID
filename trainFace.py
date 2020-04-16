@@ -166,21 +166,40 @@ else:
 
 print("Number of photos: " + str(len(pcDict)))
 persons = set(map(lambda label: label.split('_')[0],pcDict.keys()))
+
 print("Number of people: " + str(len(persons)))
 print(persons)
 
 from sklearn.model_selection import train_test_split
-X, y = [],[]
+X, y, expressionsy = [],[],[]
 for fileName, eigenCoordinates in pcDict.items():
     X.append(eigenCoordinates)
     y.append(fileName.split('_')[0])
+    expressionsy.append(fileName.split('_')[1])
+
+expressionsX, newExpressionsy = [],[]
+for eigenCoordinates, expression in zip(X, expressionsy):
+    if not expression.isnumeric():
+        expressionsX.append(eigenCoordinates)
+        newExpressionsy.append(expression)
+
+expressionsy = newExpressionsy
+
+expressions = set(expressionsy)
+print("Number of expressions: " + str(len(expressions)))
+print(expressions)
+
 test_size=0.2
+
+#split for persons classes
 trainX, testX, trainy, testy = train_test_split(X, y, test_size=test_size)
+    
+#split for expressions classes
+
+expressionsTrainX, expressionsTestX, expressionsTrainy, expressionsTesty = train_test_split(expressionsX, expressionsy, test_size=test_size)
+
 print("Train test split: ")
 print("Test size = " + str(test_size*100) + "%")
-
-# trainX = X
-# trainy = y
 
 #####SVM#####
 from sklearn.svm import SVC as classifier
@@ -464,6 +483,63 @@ predictions = model.predict(testX)
 
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+
+
+
+expressionsTrainX, expressionsTestX, expressionsTrainy, expressionsTesty
+
+#####SVM for expressions#####
+from sklearn.svm import SVC as classifier
+model = classifier(kernel='linear',C=0.025)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, 'svcExpressionsModel.bin')
+
+
+print("##########Testing Expressions SVM model##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####Random Forest for expressions#####
+from sklearn.ensemble import RandomForestClassifier as classifier
+model = classifier()
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, 'rfExpressionsModel.bin')
+
+
+print("##########Testing Expressions Random Forest model##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
         # print(prediction)
         # print("Correct!")
