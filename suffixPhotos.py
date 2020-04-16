@@ -1,7 +1,7 @@
 import os
 import glob
 
-suffix = '_Matric'
+suffix = '_Neutral'
 ext = ".jpg"
 
 targetPath = "./"

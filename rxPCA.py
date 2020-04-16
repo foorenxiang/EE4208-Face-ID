@@ -38,6 +38,8 @@ class PCA:
 		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
 		eigValues, eigVectors = eigh(covMatrix)
 		# eigValues, eigVectors = eigsh(covMatrix,k=100)
+		print("eigVectors.shape")
+		print(eigVectors.shape)
 		absEigValues = list(map(lambda x: abs(x), eigValues))
 		principalComponents = []
 		for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
@@ -65,8 +67,6 @@ class PCA:
 			totalEigValuesUsed = sum(principalComponent['absEigValue'] for principalComponent in principalComponents[:self.coVarianceExplanation])
 
 			totalEigValuesPresent = sum(principalComponent['absEigValue'] for principalComponent in principalComponents)
-
-			# print(principalComponents[componentsToKeep]['absEigValue'])
 
 			print("With " + str(componentsToKeep) + " principal components specified, " + strFloat(totalEigValuesUsed/totalEigValuesPresent*100) + "% covariance is explained")
 
@@ -100,7 +100,7 @@ class PCA:
 		projValues = []
 		for component in self.reducedPrincipalComponents:
 			#use 0 index as dot product returns array
-			projValue = component['eigVector'].dot(inputPDF)[0] 
+			projValue = component['eigVector'].dot(inputPDF)[0]
 			# print("projValue")
 			# print(projValue)
 			projValues.append(projValue)

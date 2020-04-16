@@ -46,14 +46,13 @@ fftDict = dict()
 useZeroMean = True
 
 #resize subimage
-dim = (60, 60) #width, height
+dim = (100, 100) #width, height
 
 #set to false to update models and dictionaries
-reTrainAll = True
+reTrainAll = False
 faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
-ELMLoad = False
 
 processedFiles = list()
 
@@ -115,9 +114,9 @@ if faceDictLoad == False:
     for person in unstableDetects:
         print(person)
         #display images with unstable detections
-        plt.figure(figsize=(8,8))
-        plt.imshow(faceDict[person], cmap='gray')
-        plt.show()      
+        # plt.figure(figsize=(8,8))
+        # plt.imshow(faceDict[person], cmap='gray')
+        # plt.show()      
 
     print("Number of faces in faceDict: " + str(len(faceDict)))
     dump(faceDict, 'faceDict.bin')
@@ -131,10 +130,12 @@ else:
 if pcaModelLoad == False:
     #determing principal components
     print("Performing PCA on dataset")
-    pcaModel = PCA(n_components=.95)
+    pcaModel = PCA(n_components=30)
     facesPDF = pd.DataFrame(list(iVectorDict.values()))
     print("number of detected faces")
     print(len(facesPDF))
+    if (len(facesPDF) == 0):
+        raise ValueError
     pcaModel.fit(facesPDF)
     dump(pcaModel, 'pcaModel.bin')
 else:
@@ -143,7 +144,9 @@ else:
 
 if pcaDataLoad == False:
     print("Calcuating Principal Components of faces")
-    for person in iVectorDict:
+    for person, personIndex in zip(iVectorDict, range(len(iVectorDict))):
+        print("Image Index:")
+        print(personIndex)
         pcDict[person] = pcaModel.transform(pd.DataFrame(list(iVectorDict[person])))
         print(person)
         print(pcDict[person])
@@ -158,53 +161,319 @@ if pcaDataLoad == False:
 else:
     print("Loading pcDict from disk")
     pcDict = load('pcDict.bin')
+    del pcDict['useZeroMean']
+    del pcDict['dim']
 
-print("Keys of pcDict:")
-print(pcDict.keys())
+print("Number of photos: " + str(len(pcDict)))
+persons = set(map(lambda label: label.split('_')[0],pcDict.keys()))
+print("Number of people: " + str(len(persons)))
+print(persons)
 
-randPerson = random.choice(list(pcDict.keys()))
-testFile = path+randPerson+".jpg"
-testImg = cv2.imread(testFile,0)
+from sklearn.model_selection import train_test_split
+X, y = [],[]
+for fileName, eigenCoordinates in pcDict.items():
+    X.append(eigenCoordinates)
+    y.append(fileName.split('_')[0])
+test_size=0.2
+trainX, testX, trainy, testy = train_test_split(X, y, test_size=test_size)
+print("Train test split: ")
+print("Test size = " + str(test_size*100) + "%")
 
-faces = faceCascade.detectMultiScale(testImg, scaleFactor=1.1, minNeighbors=5,flags=cv2.CASCADE_SCALE_IMAGE)
-face = None
-#eliminate false positives
-if len(faces): 
-    face = faces[0]
+# trainX = X
+# trainy = y
 
-    ########process subimage########
-    x = face[0]
-    y = face[1]
-    w = face[2]
-    h = face[3]
-    #get subimage as square
-    ext = min([max([w,h]), np.shape(testImg)[0]-x, np.shape(testImg)[1]]-y)
-    # extract subimage containing face 
-    subImage = testImg[y:(y+h),x:(x+w)]
-    subImage = cv2.resize(subImage, dim)
+#####SVM#####
+from sklearn.svm import SVC as classifier
+model = classifier(kernel='linear',C=0.025)
+model.fit(trainX,trainy)
+dump(model, 'svcModel.bin')
 
-    #vector of pixels for each face
-    iVector = subImage.flatten('C')
-    
-    if useZeroMean == True:
-        #apply zero mean to ignore brightnass bias
-        iVector = iVector-np.mean(iVector)
 
-    pcData = pcaModel.transform(pd.DataFrame(list(iVector)))
+print("##########Testing SVM model##########")
+predictions = model.predict(testX)
 
-    #rewrite as map function
-    guess = float('inf')
-    currentError = float('inf')
-    for person in pcDict:
-        #get error between the PCA and perform SSD
-        SSD = np.sum(np.subtract(pcData, pcDict[person]).flatten()**2)
-
-        if SSD< currentError:
-            currentError = SSD
-            guess = person
-
-    print("Person identified: " + guess)
-    if guess == randPerson:
-        print("Correct match!")
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
     else:
-        print("Wrong identification. Correct person is: " + randPerson)
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+# #####Adaboost#####
+# from sklearn.ensemble import AdaBoostClassifier as classifier
+# model = classifier(n_estimators=100, random_state=0)
+# model.fit(trainX,trainy)
+# dump(model, 'adaBoostModel.bin')
+
+
+# print("##########Testing Adaboost model##########")
+# predictions = model.predict(testX)
+
+# rights, wrongs = 0,0
+# for prediction, actual in zip(predictions, testy):
+#     if prediction == actual:
+#         print(prediction)
+#         print("Correct!")
+#         rights+=1
+#     else:
+#         print(prediction + ' vs ' + actual)
+#         print("Wrong!")
+#         wrongs+=1
+
+# print("Rights: " + str(rights))
+# print("Wrongs:" + str(wrongs))
+# print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+# print("\n")
+
+#####GradientBoosting#####
+from sklearn.ensemble import GradientBoostingClassifier as classifier
+model = classifier()
+model.fit(trainX,trainy)
+dump(model, 'gradBoostModel.bin')
+
+
+print("##########Testing GradientBoosting model##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####Random Forest#####
+from sklearn.ensemble import RandomForestClassifier as classifier
+model = classifier()
+model.fit(trainX,trainy)
+dump(model, 'randomForestModel.bin')
+
+
+print("##########Testing Random Forest model##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+# #####Stacking Classifier#####
+# from sklearn.ensemble import StackingClassifier as classifier
+# from sklearn.ensemble import RandomForestClassifier
+# # from sklearn.linear_model import LogisticRegression
+# from sklearn.svm import SVC
+# estimators = [('rf', RandomForestClassifier()),('svc', SVC(kernel='linear',C=0.025))]
+# model = classifier(estimators = estimators, final_estimator=SVC(kernel='linear',C=0.025))
+
+# model.fit(trainX,trainy)
+# dump(model, 'stackingModel.bin')
+
+
+# print("##########Testing Stacking Classifier model with log reg as final estimator##########")
+# predictions = model.predict(testX)
+
+# rights, wrongs = 0,0
+# for prediction, actual in zip(predictions, testy):
+#     if prediction == actual:
+#         print(prediction)
+#         print("Correct!")
+#         rights+=1
+#     else:
+#         print(prediction + ' vs ' + actual)
+#         print("Wrong!")
+#         wrongs+=1
+
+# print("Rights: " + str(rights))
+# print("Wrongs:" + str(wrongs))
+# print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+# print("\n")
+
+#####HistGradientBoostingClassifier#####
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingClassifier as classifier
+model = classifier()
+model.fit(trainX,trainy)
+dump(model, 'histGradBoostingModel.bin')
+
+
+print("##########Testing HistGradientBoostingClassifier model##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####K-NN, n=1#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=1)
+model.fit(trainX,trainy)
+dump(model, 'KNNModel.bin')
+
+
+print("##########Testing K-NN model, n = 1##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####K-NN, n=5#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=5)
+model.fit(trainX,trainy)
+dump(model, 'KNNModel.bin')
+
+
+print("##########Testing K-NN model, n = 5##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####K-NN, n=3#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=3)
+model.fit(trainX,trainy)
+dump(model, 'KNNModel.bin')
+
+
+print("##########Testing K-NN model, n = 3##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####ELM with MLP Random Layer#####
+from random_layer import MLPRandomLayer
+from elm import GenELMClassifier as classifier
+def powtanh_xfer(activations, power=1.0):
+    return pow(np.tanh(activations), power)
+model = classifier(hidden_layer=MLPRandomLayer(n_hidden=100, activation_func=powtanh_xfer, activation_args={'power':3.0}))
+model.fit(trainX,trainy)
+dump(model, 'ELMModel.bin')
+
+
+print("##########Testing ELM with MLP Random Layer model##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####ELM with RBF Random Layer#####
+from random_layer import RBFRandomLayer
+from elm import GenELMClassifier as classifier
+model = classifier(hidden_layer=RBFRandomLayer(n_hidden=100, random_state=0, rbf_width=0.01))
+model.fit(trainX,trainy)
+dump(model, 'ELMModel.bin')
+
+
+print("##########Testing ELM with RBF Random Layer model##########")
+predictions = model.predict(testX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        print(prediction + ' vs ' + actual)
+        print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")

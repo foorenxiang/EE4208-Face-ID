@@ -55,6 +55,7 @@ if 'useZeroMean' in pcDict:
 #get subImage dimensions from pcDict
 try:
     dim = pcDict['dim']
+    print("dimensions detected: " + str(dim))
     del pcDict['dim']
 except KeyError:
     dim = (100, 100) #width, height
@@ -77,7 +78,6 @@ while 1:
     #for debugging
     subImages = list()
     faceIVectors = list() #list of face subImages in imagespace
-    facePCs = list()
 
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
@@ -131,7 +131,6 @@ while 1:
         faceIVectors.append(faceIVector)
         #required
         facePC = pcaModel.transform(pd.DataFrame(list(faceIVector)))
-        facePCs.append(facePC)
 
         #apply SSD to guess person
         guess = float('inf')
@@ -146,9 +145,23 @@ while 1:
 
         if currentError>unknownPersonErrorThreshold:
             guess = "Unknown person"
-        print("Guessed person: " + guess)
+
+        guess = guess.split('_')[0]
+        print("Guessed person: " + guess.split('_')[0])
         print("SSD Error: " + str(currentError))
-        rxSSD = np.sum(np.subtract(facePC, pcDict['RX_10']).flatten()**2)
+        # rxSSD = np.sum(np.subtract(facePC, pcDict['RX_10']).flatten()**2)
+
+        # from sklearn.svm import SVC as classifier
+        # model = load('svcModel.bin')
+        # facePC = np.array(facePC)
+        # facePC = facePC.reshape(1, -1)
+        # facePC.astype(float)
+        # print(facePC)
+        # guess = "NULL"
+        # guess = model.predict(facePC)
+        # print("Guessed person: " + guess)
+
+
         cv2.putText(frame, guess ,(x, y), font, 1,(255,0,0),5)
 
         cv2.imshow('subImage', subImage)
