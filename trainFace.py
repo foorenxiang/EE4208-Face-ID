@@ -130,7 +130,7 @@ else:
 if pcaModelLoad == False:
     #determing principal components
     print("Performing PCA on dataset")
-    pcaModel = PCA(n_components=30)
+    pcaModel = PCA(n_components=0.95)
     facesPDF = pd.DataFrame(list(iVectorDict.values()))
     print("number of detected faces")
     print(len(facesPDF))
@@ -170,7 +170,6 @@ persons = set(map(lambda label: label.split('_')[0],pcDict.keys()))
 print("Number of people: " + str(len(persons)))
 print(persons)
 
-from sklearn.model_selection import train_test_split
 X, y, expressionsy = [],[],[]
 for fileName, eigenCoordinates in pcDict.items():
     X.append(eigenCoordinates)
@@ -189,17 +188,65 @@ expressions = set(expressionsy)
 print("Number of expressions: " + str(len(expressions)))
 print(expressions)
 
+print("Breakdown of person labels in training set (before train test split)")
+personLabelCount = {}
+for key in set(y):
+    personLabelCount[key] = 0
+for label in y:
+    personLabelCount[label]+=1
+print(personLabelCount)
+
+print("Breakdown of expression labels in training set (before train test split)")
+expressionLabelCount = {}
+for key in set(expressionsy):
+    expressionLabelCount[key] = 0
+for label in expressionsy:
+    expressionLabelCount[label]+=1
+print(expressionLabelCount)
+
+from sklearn.model_selection import train_test_split
 test_size=0.2
 
 #split for persons classes
 trainX, testX, trainy, testy = train_test_split(X, y, test_size=test_size)
     
 #split for expressions classes
-
 expressionsTrainX, expressionsTestX, expressionsTrainy, expressionsTesty = train_test_split(expressionsX, expressionsy, test_size=test_size)
 
 print("Train test split: ")
 print("Test size = " + str(test_size*100) + "%")
+
+print("Breakdown of person labels in training set")
+personLabelCount = {}
+for key in set(trainy):
+    personLabelCount[key] = 0
+for label in trainy:
+    personLabelCount[label]+=1
+print(personLabelCount)
+
+print("Breakdown of person labels in test set")
+personLabelCount = {}
+for key in set(testy):
+    personLabelCount[key] = 0
+for label in testy:
+    personLabelCount[label]+=1
+print(personLabelCount)
+
+print("Breakdown of expression labels in training set")
+personLabelCount = {}
+for key in set(expressionsTrainy):
+    personLabelCount[key] = 0
+for label in expressionsTrainy:
+    personLabelCount[label]+=1
+print(personLabelCount)
+
+print("Breakdown of expression labels in test set")
+personLabelCount = {}
+for key in set(expressionsTesty):
+    personLabelCount[key] = 0
+for label in expressionsTesty:
+    personLabelCount[label]+=1
+print(personLabelCount)
 
 #####SVM#####
 from sklearn.svm import SVC as classifier
@@ -208,7 +255,7 @@ model.fit(trainX,trainy)
 dump(model, 'svcModel.bin')
 
 
-print("##########Testing SVM model##########")
+print("##########Testing person identification with SVM model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -218,8 +265,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -227,31 +274,31 @@ print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
 
-# #####Adaboost#####
-# from sklearn.ensemble import AdaBoostClassifier as classifier
-# model = classifier(n_estimators=100, random_state=0)
-# model.fit(trainX,trainy)
-# dump(model, 'adaBoostModel.bin')
+#####Adaboost#####
+from sklearn.ensemble import AdaBoostClassifier as classifier
+model = classifier(n_estimators=100, random_state=0)
+model.fit(trainX,trainy)
+dump(model, 'adaBoostModel.bin')
 
 
-# print("##########Testing Adaboost model##########")
-# predictions = model.predict(testX)
+print("##########Testing person identification with Adaboost model##########")
+predictions = model.predict(testX)
 
-# rights, wrongs = 0,0
-# for prediction, actual in zip(predictions, testy):
-#     if prediction == actual:
-#         print(prediction)
-#         print("Correct!")
-#         rights+=1
-#     else:
-#         print(prediction + ' vs ' + actual)
-#         print("Wrong!")
-#         wrongs+=1
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
 
-# print("Rights: " + str(rights))
-# print("Wrongs:" + str(wrongs))
-# print("Score: " + str(rights/(rights+wrongs)*100) + "%")
-# print("\n")
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
 
 #####GradientBoosting#####
 from sklearn.ensemble import GradientBoostingClassifier as classifier
@@ -260,7 +307,7 @@ model.fit(trainX,trainy)
 dump(model, 'gradBoostModel.bin')
 
 
-print("##########Testing GradientBoosting model##########")
+print("##########Testing person identification with GradientBoosting model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -270,8 +317,34 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####XGBoost#####
+from xgboost import XGBClassifier as classifier
+model = classifier()
+model.fit(np.array(trainX),np.array(trainy))
+dump(model, 'gradBoostModel.bin')
+
+
+print("##########Testing person identification with XGBoost model##########")
+predictions = model.predict(np.array(testX))
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -286,7 +359,7 @@ model.fit(trainX,trainy)
 dump(model, 'randomForestModel.bin')
 
 
-print("##########Testing Random Forest model##########")
+print("##########Testing person identification with Random Forest model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -296,8 +369,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -305,36 +378,35 @@ print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
 
-# #####Stacking Classifier#####
-# from sklearn.ensemble import StackingClassifier as classifier
-# from sklearn.ensemble import RandomForestClassifier
-# # from sklearn.linear_model import LogisticRegression
-# from sklearn.svm import SVC
-# estimators = [('rf', RandomForestClassifier()),('svc', SVC(kernel='linear',C=0.025))]
-# model = classifier(estimators = estimators, final_estimator=SVC(kernel='linear',C=0.025))
+#####Stacking Classifier#####
+from sklearn.ensemble import StackingClassifier as classifier
+from sklearn.ensemble import RandomForestClassifier
+# from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+estimators = [('rf', RandomForestClassifier()),('svc', SVC(kernel='linear',C=0.025))]
+model = classifier(estimators = estimators, final_estimator=SVC(kernel='linear',C=0.025))
 
-# model.fit(trainX,trainy)
-# dump(model, 'stackingModel.bin')
+model.fit(trainX,trainy)
+dump(model, 'stackingModel.bin')
 
+print("##########Testing person identification with Stacking Classifier model with log reg as final estimator##########")
+predictions = model.predict(testX)
 
-# print("##########Testing Stacking Classifier model with log reg as final estimator##########")
-# predictions = model.predict(testX)
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, testy):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
 
-# rights, wrongs = 0,0
-# for prediction, actual in zip(predictions, testy):
-#     if prediction == actual:
-#         print(prediction)
-#         print("Correct!")
-#         rights+=1
-#     else:
-#         print(prediction + ' vs ' + actual)
-#         print("Wrong!")
-#         wrongs+=1
-
-# print("Rights: " + str(rights))
-# print("Wrongs:" + str(wrongs))
-# print("Score: " + str(rights/(rights+wrongs)*100) + "%")
-# print("\n")
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
 
 #####HistGradientBoostingClassifier#####
 from sklearn.experimental import enable_hist_gradient_boosting
@@ -343,8 +415,7 @@ model = classifier()
 model.fit(trainX,trainy)
 dump(model, 'histGradBoostingModel.bin')
 
-
-print("##########Testing HistGradientBoostingClassifier model##########")
+print("##########Testing person identification with HistGradientBoostingClassifier model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -354,8 +425,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -367,10 +438,9 @@ print("\n")
 from sklearn.neighbors import KNeighborsClassifier as classifier
 model = classifier(n_neighbors=1)
 model.fit(trainX,trainy)
-dump(model, 'KNNModel.bin')
+dump(model, 'SADModel.bin')
 
-
-print("##########Testing K-NN model, n = 1##########")
+print("##########Testing person identification with K-NN model, n = 1##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -380,8 +450,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -393,10 +463,9 @@ print("\n")
 from sklearn.neighbors import KNeighborsClassifier as classifier
 model = classifier(n_neighbors=5)
 model.fit(trainX,trainy)
-dump(model, 'KNNModel.bin')
+dump(model, '5NNModel.bin')
 
-
-print("##########Testing K-NN model, n = 5##########")
+print("##########Testing person identification with K-NN model, n = 5##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -406,8 +475,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -419,10 +488,9 @@ print("\n")
 from sklearn.neighbors import KNeighborsClassifier as classifier
 model = classifier(n_neighbors=3)
 model.fit(trainX,trainy)
-dump(model, 'KNNModel.bin')
+dump(model, '3NNModel.bin')
 
-
-print("##########Testing K-NN model, n = 3##########")
+print("##########Testing person identification with K-NN model, n = 3##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -432,8 +500,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -448,10 +516,9 @@ def powtanh_xfer(activations, power=1.0):
     return pow(np.tanh(activations), power)
 model = classifier(hidden_layer=MLPRandomLayer(n_hidden=100, activation_func=powtanh_xfer, activation_args={'power':3.0}))
 model.fit(trainX,trainy)
-dump(model, 'ELMModel.bin')
+dump(model, 'ELMMLPModel.bin')
 
-
-print("##########Testing ELM with MLP Random Layer model##########")
+print("##########Testing person identification with ELM with MLP Random Layer model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -461,8 +528,8 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -475,10 +542,9 @@ from random_layer import RBFRandomLayer
 from elm import GenELMClassifier as classifier
 model = classifier(hidden_layer=RBFRandomLayer(n_hidden=100, random_state=0, rbf_width=0.01))
 model.fit(trainX,trainy)
-dump(model, 'ELMModel.bin')
+dump(model, 'ELMRBFModel.bin')
 
-
-print("##########Testing ELM with RBF Random Layer model##########")
+print("##########Testing person identification with ELM with RBF Random Layer model##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -488,19 +554,14 @@ for prediction, actual in zip(predictions, testy):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-
-
-
-
-expressionsTrainX, expressionsTestX, expressionsTrainy, expressionsTesty
 
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
@@ -519,8 +580,8 @@ for prediction, actual in zip(predictions, expressionsTesty):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -545,8 +606,190 @@ for prediction, actual in zip(predictions, expressionsTesty):
         # print("Correct!")
         rights+=1
     else:
-        print(prediction + ' vs ' + actual)
-        print("Wrong!")
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression K-NN centroid#####
+from sklearn.neighbors import NearestCentroid as classifier
+model = classifier()
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, 'centroidKNNExpressionsModel.bin')
+
+
+print("##########Testing expression K-NN centroid model##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression SAD#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=1)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, 'SADExpressionsModel.bin')
+
+
+print("##########Testing expression SAD model##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression K-NN, n=10#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=10)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, '10NNExpressionsModel.bin')
+
+
+print("##########Testing expression K-NN model, n = 10##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression K-NN, n=20#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=20)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, '20NNExpressionsModel.bin')
+
+
+print("##########Testing expression K-NN model, n = 20##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression K-NN, n=15#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=15)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, '15NNExpressionsModel.bin')
+
+
+print("##########Testing expression K-NN model, n = 15##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####expression K-NN, n=7#####
+from sklearn.neighbors import KNeighborsClassifier as classifier
+model = classifier(n_neighbors=7)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, '7NNExpressionsModel.bin')
+
+
+print("##########Testing expression K-NN model, n = 7##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+
+#####XGBoost#####
+from xgboost import XGBClassifier as classifier
+model = classifier()
+model.fit(np.array(expressionsTrainX),np.array(expressionsTrainy))
+dump(model, 'gradBoostModel.bin')
+
+
+print("##########Testing expression XGBoost model##########")
+predictions = model.predict(np.array(expressionsTestX))
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
