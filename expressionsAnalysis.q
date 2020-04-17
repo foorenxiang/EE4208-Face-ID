@@ -60,3 +60,9 @@ show expressions!enlist each eMin
 show "difference between max and min distance of each expression"
 MaxMinDiff: eMax - eMin
 show expressions!enlist each MaxMinDiff
+
+show "smallest distance from expression centroid, for expression samples"
+samplesToConsider:10
+show closestToCentroid:expressions!{[expression] samplesToConsider# asc `int$abs expression - avg expression} each (EO;EF;EL;EC;neutral;ES)
+show "indexes for above calculation"
+show closestToCentroidIndices:{[expression] samplesToConsider# iasc `int$abs expression - avg expression} each (EO;EF;EL;EC;neutral;ES)
