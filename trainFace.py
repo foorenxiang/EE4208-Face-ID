@@ -151,9 +151,22 @@ if pcaDataLoad == False:
         print(person)
         print(pcDict[person])
 
+    try:
+        del accumulator
+    except:
+        pass
+    for key,value in pcDict.items():
+        if key not in ignoreKeys:
+            if 'accumulator' not in globals():
+                accumulator = value
+            else:
+                accumulator = np.add(accumulator,value)
+    facesCentroid = accumulator.tolist()
+    pcDict['facesCentroid'] = facesCentroid
     pcDict['useZeroMean'] = useZeroMean
     pcDict['dim'] = dim
     dump(pcDict, 'pcDict.bin')
+    del pcDict['facesCentroid']
     del pcDict['useZeroMean'] 
     del pcDict['dim'] 
     print("number of trained faces")
@@ -161,6 +174,8 @@ if pcaDataLoad == False:
 else:
     print("Loading pcDict from disk")
     pcDict = load('pcDict.bin')
+    facesCentroid = pcDict['facesCentroid']
+    del pcDict['facesCentroid']
     del pcDict['useZeroMean']
     del pcDict['dim']
 
@@ -254,7 +269,7 @@ model = classifier(kernel='linear',C=0.025)
 model.fit(trainX,trainy)
 dump(model, 'svcModel.bin')
 
-
+'''
 print("##########Testing person identification with SVM model##########")
 predictions = model.predict(testX)
 
@@ -562,7 +577,26 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
+'''
 
+#####calculate SSD for each expression#####
+expressionSSDstore = {}
+for expression in expressions:
+    expressionSSDstore[expression] = []
+for coordinate, label in zip(expressionsX, expressionsy):
+    SSD = np.sum(np.subtract(facesCentroid, coordinate).flatten()**2)
+    print(label + " " +str(SSD))
+    expressionSSDstore[label].append(SSD)
+from statistics import mean, median
+for expression in expressions:
+    print(expression)
+    print(expressionSSDstore[expression])
+    print("median:")
+    print(median(expressionSSDstore[expression]))
+    print("mean:")
+    print(mean(expressionSSDstore[expression]))
+    print("\n")
+'''
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
 model = classifier(kernel='linear',C=0.025)
@@ -796,3 +830,4 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
+'''
