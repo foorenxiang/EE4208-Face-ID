@@ -32,14 +32,31 @@ class PCA:
 		# dataset = dataset - self.datasetMean
 		dataset -= dataset.mean(axis=0)
 		dataset /= np.std(dataset,axis=0)
+		dataset = dataset.to_numpy()
+		print('dataset type')
+		print(type(dataset))
+		try:
+			dataset.shape
+			print('dataset shape')
+			print(dataset.shape)
+		except:
+			print('dataset has no shape property')
 		
 		#find covariance matrix
 		# covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
 		covMatrix = dataset.T.dot(dataset) / dataset.shape[0]
+		print('covMatrix type')
+		print(type(covMatrix))
+		try:
+			covMatrix.shape
+			print('covMatrix shape')
+			print(covMatrix.shape)
+		except:
+			print('covMatrix has no shape property')
 
 		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
-		eigValues, eigVectors = eigh(covMatrix)
-		# eigValues, eigVectors = EVD(covMatrix)
+		# eigValues, eigVectors = eigh(covMatrix)
+		eigValues, eigVectors = EVD(covMatrix)
 		eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 		print("eigVectors.shape")
 		print(eigVectors.shape)
@@ -93,11 +110,17 @@ class PCA:
 		#normalise test data
 		inputPDF -= self.datasetMean
 		#project test data to eigenspace
-
+		inputPDF = inputPDF.to_numpy()
+		if np.isnan(inputPDF).any():
+			print("inputPDF NAN")
+			raise ValueError
 		projValues = []
 		for component in self.reducedPrincipalComponents:
 			#use 0 index as dot product returns array
 			projValue = component['eigVector'].dot(inputPDF)[0]
+			if np.isnan(projValue).any():
+				print("projValue NAN")
+				raise ValueError
 			projValues.append(projValue)
 
 		return projValues
