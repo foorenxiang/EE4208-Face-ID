@@ -5,42 +5,31 @@ p)expressionSSDstore = load('expressionSSDstore.bin')
 "expressionSSDstore"
 show expressionSSDstore:.p.py2q .p.pyget `expressionSSDstore
 
+
 \p 5001
 \cd /Users/foorx/developer
 \l launcher.q_
 \cd /Users/foorx/opencv
 
+\c 45 177
+
 show "Expressions"
-show expressions:`EO`EF`EL`EC`NEUTRAL`ES
+show expressions:cols expressionSSDstore
+{[expression] show (string expression)," expression euclidean distance from faces centroid";
+	show expressionSSDstore[expression]} each expressions;
 
-"EO expression euclidean distance from faces centroid"
-show EO:expressionSSDstore[`EO]
-
-show "EF expression euclidean distance from faces centroid"
-show EF:expressionSSDstore[`EF]
-
-show "EL expression euclidean distance from faces centroid"
-show EL:expressionSSDstore[`EL]
-
-show "EC expression euclidean distance from faces centroid"
-show EC:expressionSSDstore[`EC]
-
-show "neutral expression euclidean distance from faces centroid"
-show neutral:expressionSSDstore[`neutral]
-
-show "ES expression euclidean distance from faces centroid"
-show ES:expressionSSDstore[`ES]
+listsOfExpressions:{expressionSSDstore[x]} each expressions
 
 show "standard deviation of each expression"
-eStdDev: dev each (EO;EF;EL;EC;neutral;ES)
+eStdDev: dev each listsOfExpressions
 show expressions!enlist each eStdDev
 
 show "mean distance of each expression"
-eMean: avg each (EO;EF;EL;EC;neutral;ES)
+eMean: avg each listsOfExpressions
 show expressions!enlist each eMean
 
 "median distance of each expressions"
-eMedian: med each (EO;EF;EL;EC;neutral;ES)
+eMedian: med each listsOfExpressions
 show expressions!enlist each eMedian
 
 show "mean distance of mean of expressions"
@@ -58,11 +47,11 @@ eMedianBias: eMedian-eMedianMean
 show expressions!enlist each eMedianBias
 
 show "max distance of each expression"
-eMax: max each (EO;EF;EL;EC;neutral;ES)
+eMax: max each listsOfExpressions
 show expressions!enlist each eMax
 
 show "min distance of each expression"
-eMin: min each (EO;EF;EL;EC;neutral;ES)
+eMin: min each listsOfExpressions
 show expressions!enlist each eMin
 
 show "difference between max and min distance of each expression"
@@ -71,6 +60,8 @@ show expressions!enlist each MaxMinDiff
 
 show "smallest distance from expression centroid, for expression samples"
 samplesToConsider:10
-show closestToCentroid:expressions!{[expression] samplesToConsider# asc `int$abs expression - avg expression} each (EO;EF;EL;EC;neutral;ES)
+show closestToCentroid:expressions!{[expression]
+	samplesToConsider# asc `int$abs expression - avg expression} each listsOfExpressions
 show "indexes for above calculation"
-show closestToCentroidIndices:{[expression] samplesToConsider# iasc `int$abs expression - avg expression} each (EO;EF;EL;EC;neutral;ES)
+show closestToCentroidIndices:{[expression]
+	samplesToConsider# iasc `int$abs expression - avg expression} each listsOfExpressions
