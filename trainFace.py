@@ -133,6 +133,7 @@ if pcaModelLoad == False:
     print("Performing PCA on dataset")
     pcaModel = PCA(n_components=0.95)
     facesPDF = pd.DataFrame(list(iVectorDict.values()))
+    dump(facesPDF, 'facesPDF.bin')
     print("number of detected faces")
     print(len(facesPDF))
     if (len(facesPDF) == 0):
