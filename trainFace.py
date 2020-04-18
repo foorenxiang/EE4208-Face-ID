@@ -49,11 +49,12 @@ useZeroMean = True
 dim = (100, 100) #width, height
 
 #set to false to update models and dictionaries
-reTrainAll = False
+reTrainAll = True
 faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
+faceDictLoad = True
 processedFiles = list()
 
 if faceDictLoad == False:
@@ -151,6 +152,8 @@ if pcaDataLoad == False:
         print(person)
         print(pcDict[person])
 
+    dump(pcDict, 'pcDict.bin')
+    ignoreKeys = ['useZeroMean', 'dim', 'facesCentroid']
     try:
         del accumulator
     except:
@@ -269,7 +272,7 @@ model = classifier(kernel='linear',C=0.025)
 model.fit(trainX,trainy)
 dump(model, 'svcModel.bin')
 
-'''
+
 print("##########Testing person identification with SVM model##########")
 predictions = model.predict(testX)
 
@@ -577,7 +580,7 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-'''
+
 
 #####calculate SSD for each expression#####
 expressionSSDstore = {}
@@ -596,7 +599,7 @@ for expression in expressions:
     print("mean:")
     print(mean(expressionSSDstore[expression]))
     print("\n")
-'''
+
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
 model = classifier(kernel='linear',C=0.025)
@@ -830,4 +833,3 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-'''

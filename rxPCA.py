@@ -6,6 +6,13 @@ from scipy.sparse.linalg import eigsh
 def strFloat(floatVal):
 	return "{0:.2f}".format(round(floatVal,2))
 
+def EVD(X):
+	from scipy.sparse.linalg import eigsh
+	# s, U = np.linalg.eig(X)
+	s, U = eigsh(X,k=100)
+	idx = s.argsort()[::-1] # decreasing order
+	return s[idx], U[:,idx]
+
 class PCA:
 	def __init__(self, n_components = 0.9):
 		self.coVarianceExplanation = n_components
@@ -21,14 +28,19 @@ class PCA:
 			raise Exception('inputPDF should be a pandas DataFrame!')
 		#find mean of each feature
 		#deduct mean of each feature from dataset
-		self.datasetMean = np.mean(dataset, axis=0)
-		dataset = dataset - self.datasetMean
+		# self.datasetMean = np.mean(dataset, axis=0)
+		# dataset = dataset - self.datasetMean
+		dataset -= dataset.mean(axis=0)
+		dataset /= np.std(dataset,axis=0)
 		
 		#find covariance matrix
-		covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
+		# covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
+		covMatrix = dataset.T.dot(dataset) / dataset.shape[0]
 
 		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
 		eigValues, eigVectors = eigh(covMatrix)
+		# eigValues, eigVectors = EVD(covMatrix)
+		eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 		print("eigVectors.shape")
 		print(eigVectors.shape)
 		absEigValues = list(map(lambda x: abs(x), eigValues))
