@@ -269,7 +269,6 @@ model = classifier(kernel='linear',C=0.025)
 model.fit(trainX,trainy)
 dump(model, 'svcModel.bin')
 
-'''
 print("##########Testing person identification with SVM model##########")
 predictions = model.predict(testX)
 
@@ -577,7 +576,6 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-'''
 
 #####calculate SSD for each expression#####
 expressionSSDstore = {}
@@ -596,7 +594,8 @@ for expression in expressions:
     print("mean:")
     print(mean(expressionSSDstore[expression]))
     print("\n")
-'''
+dump(expressionSSDstore, 'expressionSSDstore.bin')
+
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
 model = classifier(kernel='linear',C=0.025)
@@ -830,4 +829,3 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-'''
