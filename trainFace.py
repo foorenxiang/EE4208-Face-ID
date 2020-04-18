@@ -6,10 +6,10 @@ https://medium.com/@sebastiannorena/pca-principal-components-analysis-applied-to
 
 #use python3 command to execute!
 
-import cv2
+# import cv2
 import matplotlib.pyplot as plt
-import dlib
-from imutils import face_utils
+# import dlib
+# from imutils import face_utils
 
 # from sklearn.decomposition import PCA
 from rxPCA import PCA
@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 from joblib import dump, load
 
+'''
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 dataLoc = "/Users/foorx/opencv/venv/lib/python3.6/site-packages/cv2/data"
@@ -27,6 +28,7 @@ smilePath = dataLoc + "/haarcascade_smile.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 eyeCascade = cv2.CascadeClassifier(eyePath)
 smileCascade = cv2.CascadeClassifier(smilePath)
+'''
 
 import glob
 import random
@@ -58,6 +60,8 @@ faceDictLoad = True
 processedFiles = list()
 
 if faceDictLoad == False:
+    pass
+    '''
     for file in files:
         input = file
         # input = input.split('_') #convert to this instead
@@ -122,6 +126,7 @@ if faceDictLoad == False:
     print("Number of faces in faceDict: " + str(len(faceDict)))
     dump(faceDict, 'faceDict.bin')
     dump(iVectorDict, 'iVectorDict.bin')
+    '''
 
 else:
     print("loaded processed subimages from disk")
