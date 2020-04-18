@@ -345,7 +345,7 @@ print("\n")
 from xgboost import XGBClassifier as classifier
 model = classifier()
 model.fit(np.array(trainX),np.array(trainy))
-dump(model, 'gradBoostModel.bin')
+dump(model, 'XGBoostModel.bin')
 
 
 print("##########Testing person identification with XGBoost model##########")
