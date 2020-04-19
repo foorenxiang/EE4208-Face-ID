@@ -56,6 +56,6 @@ Team Members:
 - CAS-PEAL Face Database (neutral and expressions sets)
   - http://www.jdl.ac.cn/peal/
 - Group Member Photos
-  - 5 photos of each person with varying head tilt
-429 images of 83 people with varying expressions were used to train expression classifiers
-112 images of 22 people were used to train person classifiers
+  - 5 photos of each person with varying head tilt  
+429 images of 83 people with varying expressions were used to train expression classifiers  
+112 images of 22 people were used to train person classifiers  
