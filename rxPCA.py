@@ -41,37 +41,8 @@ class PCA:
 		print("Eigendecomposition time: " + str(elapsed) +' seconds')
 		eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 
-		# dataset -= dataset.mean(axis=0)
-		# dataset /= np.std(dataset,axis=0)
-		# dataset = dataset.to_numpy()
-		# print('dataset type')
-		# print(type(dataset))
-		# try:
-		# 	dataset.shape
-		# 	print('dataset shape')
-		# 	print(dataset.shape)
-		# except:
-		# 	print('dataset has no shape property')
-		
-		# #find covariance matrix
-		# # covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
-		# covMatrix = dataset.T.dot(dataset) / dataset.shape[0]
-		# print('covMatrix type')
-		# print(type(covMatrix))
-		# try:
-		# 	covMatrix.shape
-		# 	print('covMatrix shape')
-		# 	print(covMatrix.shape)
-		# except:
-		# 	print('covMatrix has no shape property')
-
-		# #calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
-		# # eigValues, eigVectors = eigh(covMatrix)
-		# eigValues, eigVectors = EVD(covMatrix)
-		# eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 		print("eigVectors.shape")
 		print(eigVectors.shape)
-		# absEigValues = list(map(lambda x: abs(x), eigValues))
 		absEigValues = eigValues
 		principalComponents = []
 		for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
@@ -122,10 +93,6 @@ class PCA:
 		except ValueError:
 			inputPDF = inputPDF.T
 
-		#normalise test data
-		# inputPDF -= self.datasetMean
-		#project test data to eigenspace
-		# inputPDF = inputPDF.to_numpy()
 		if np.isnan(inputPDF).any():
 			print("inputPDF NAN")
 			raise ValueError
