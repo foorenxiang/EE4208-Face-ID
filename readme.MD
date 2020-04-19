@@ -27,7 +27,8 @@ Classifiers Tested during training step:
 - Random Forest
 - Histogram Gradient Boosting
 - K-NN 
-  
+- Extreme Learning Machines
+    
 Images and video-stream are zero-meaned to deal with lighting changes.
   
 SSD used to determine if person in frame is not within training set.
