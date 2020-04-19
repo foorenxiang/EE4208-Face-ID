@@ -64,19 +64,29 @@ except KeyError:
 
 unknownPersonErrorThreshold = 450000
 
-skipFrameThreshold = 1
+skipFrameThreshold = 2
 skipFrame = skipFrameThreshold-1
+
+validClassificationMethod = ['SSD', 'SVM']
+classificationMethod = 'SSD'
+if classificationMethod not in validClassificationMethod:
+    raise ValueError("classificationMethod must be in " + str(validClassificationMethod) + '!')
+print('classificationMethod: ' + classificationMethod)
 
 while 1:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
     
-    skipFrame+=1
-    if skipFrame == skipFrameThreshold:
-        skipFrame = 0
 
-    if skipFrame != 0:
-        continue
+    if skipFrameThreshold <= 1 or  validClassificationMethod == 'SSD':
+        pass
+    else:
+        skipFrame+=1
+        if skipFrame == skipFrameThreshold:
+            skipFrame = 0
+
+        if skipFrame != 0:
+            continue
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -145,52 +155,56 @@ while 1:
         #required
         facePC = pcaModel.transform(pd.DataFrame(list(faceIVector)))
 
-        # #apply SSD to guess person
-        # guess = float('inf')
-        # currentError = float('inf')
-        # for person in pcDict:
-        #     #get error between the PCA and perform SSD
-        #     SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
-
-        #     if SSD< currentError:
-        #         currentError = SSD
-        #         guess = person
-
-        # if currentError>unknownPersonErrorThreshold:
-        #     guess = "Unknown person"
-
-        # guess = guess.split('_')[0]
-        # print("Guessed person: " + guess.split('_')[0])
-        # print("SSD Error: " + str(currentError))
-
-        #must enlist sample before feeding to model
-        personGuess = personClassifierModel.predict([facePC])
-        #take first result from singleton list
-        personGuess = personGuess[0]
-
-        #must enlist sample before feeding to model
-        expressionGuess = expressionClassifierModel.predict([facePC])
-        #take first result from singleton list
-        expressionGuess = expressionGuess[0]
-
-        #apply SSD to guess person
-        currentError = float('inf')
-        for person in pcDict:
-            if personGuess in person:
-            #get error between the PCA and perform SSD
+        if classificationMethod == 'SSD':
+            #apply SSD to guess person
+            guess = float('inf')
+            currentError = float('inf')
+            for person in pcDict:
+                #get error between the PCA and perform SSD
                 SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
 
-                if SSD<currentError:
+                if SSD< currentError:
                     currentError = SSD
+                    guess = person
 
-        print('Squared Euclidean Distance: ' + str(currentError))
-        if currentError>unknownPersonErrorThreshold:
-            personGuess = "Unknown Person"
+            if currentError>unknownPersonErrorThreshold:
+                guess = "Unknown person"
 
-        print("Guessed person: " + personGuess)
-        print("Guessed expression: " + expressionGuess)
+            guess = guess.split('_')[0]
+            print("Guessed person: " + guess)
+            print("SSD Error: " + str(currentError))
+            cv2.putText(frame, guess ,(x, y), font, 1,(255,0,0),5)
 
-        cv2.putText(frame, personGuess + '(' + expressionGuess +')' ,(x, y), font, 1,(255,0,0),5)
+        if classificationMethod == 'SVM':
+            #using SVM to classify person
+            #must enlist sample before feeding to model
+            personGuess = personClassifierModel.predict([facePC])
+            #take first result from singleton list
+            personGuess = personGuess[0]
+
+            #must enlist sample before feeding to model
+            expressionGuess = expressionClassifierModel.predict([facePC])
+            #take first result from singleton list
+            expressionGuess = expressionGuess[0]
+
+            #using SSD to check if person is not in any class
+            currentError = float('inf')
+            for person in pcDict:
+                if personGuess in person:
+                #get error between the PCA and perform SSD
+                    SSD = np.sum(np.subtract(facePC, pcDict[person]).flatten()**2)
+
+                    if SSD<currentError:
+                        currentError = SSD
+
+            print('Squared Euclidean Distance: ' + str(currentError))
+            if currentError>unknownPersonErrorThreshold:
+                personGuess = "Unknown Person"
+
+            print("Guessed person: " + personGuess)
+            print("Guessed expression: " + expressionGuess)
+
+            cv2.putText(frame, personGuess + '(' + expressionGuess +')' ,(x, y), font, 1,(255,0,0),5)
 
         cv2.imshow('subImage', subImage)
 
