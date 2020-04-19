@@ -55,8 +55,8 @@ faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
-faceDictLoad = True
-showIndividualPredictions = True
+disableTrainTestSplit = True
+showIndividualPredictions = False
 
 processedFiles = list()
 
@@ -234,12 +234,21 @@ test_size=0.2
 
 #split for persons classes
 trainX, testX, trainy, testy = train_test_split(X, y, test_size=test_size)
+
+if disableTrainTestSplit:
+    trainX, trainy = X, y
     
 #split for expressions classes
 expressionsTrainX, expressionsTestX, expressionsTrainy, expressionsTesty = train_test_split(expressionsX, expressionsy, test_size=test_size)
 
-print("Train test split: ")
-print("Test size = " + str(test_size*100) + "%")
+if disableTrainTestSplit:
+    expressionsTrainX, expressionsTrainy = expressionsX, expressionsy
+
+if disableTrainTestSplit:
+    print("TRAIN TEST SPLIT DISABLED")
+else:
+    print("Train test split: ")
+    print("Test size = " + str(test_size*100) + "%")
 
 print("Breakdown of person labels in training set")
 personLabelCount = {}
