@@ -28,8 +28,6 @@ Classifiers Tested during training step:
 - Histogram Gradient Boosting
 - K-NN 
   
-429 images of 83 people with varying expressions.
-  
 Images and video-stream are zero-meaned to deal with lighting changes.
   
 SSD used to determine if person in frame is not within training set.
@@ -57,3 +55,7 @@ Team Members:
 ### Dataset Used:
 - CAS-PEAL Face Database (neutral and expressions sets)
   - http://www.jdl.ac.cn/peal/
+- Group Member Photos
+  - 5 photos of each person with varying head tilt
+429 images of 83 people with varying expressions were used to train expression classifiers
+112 images of 22 people were used to train person classifiers
