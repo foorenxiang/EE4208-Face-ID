@@ -1,4 +1,4 @@
-## Face Detection using PCA and Classifers for people and expressions
+## Face Detection using PCA with People and Expression Classifiers
 
 ### Real-time detection implementing:
   - Principal Component Analysis (PCA)
