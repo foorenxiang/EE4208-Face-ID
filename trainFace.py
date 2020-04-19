@@ -636,7 +636,6 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
->>>>>>> 5e07b9c... fixed PCA
 
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
