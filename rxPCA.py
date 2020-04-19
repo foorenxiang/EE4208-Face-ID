@@ -9,7 +9,9 @@ def strFloat(floatVal):
 
 def EVD(X):
     # s, U = eigsh(X,k=X.shape[0])
+    print("Running Eigen decomposition")
     s, U = eigh(X, turbo = True, overwrite_a = True, overwrite_b = True)
+    print("Eigen decomposition completed")
     idx = s.argsort()[::-1] # decreasing order
     return s[idx], U[:,idx]
 
