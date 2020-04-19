@@ -62,7 +62,8 @@ try:
 except KeyError:
     dim = (100, 100) #width, height
 
-unknownPersonErrorThreshold = 600000
+# unknownPersonErrorThreshold = 850000
+unknownPersonErrorThreshold = 200000
 
 skipFrameThreshold = 2
 skipFrame = skipFrameThreshold-1
