@@ -1,0 +1,111 @@
+Last login: Sun Apr 19 15:20:44 on ttys001
+rlwr(base) Ren-Xiangs-MBP-2017:opencv foorx$ rlwrap q *.q
+KDB+ 3.6 2019.08.20 Copyright (C) 1993-2019 Kx Systems
+m64/ 4()core 16384MB foorx ren-xiangs-mbp-2017.local 127.0.0.1 EXPIRE 2020.10.02 foorenxiang@gmail.com KOD #5001568
+
+KDB+ 3.6 2019.08.20 Copyright (C) 1993-2019 Kx Systems
+m64/ 4()core 16384MB foorx ren-xiangs-mbp-2017.local 127.0.0.1 EXPIRE 2020.10.02 foorenxiang@gmail.com KOD #5001568
+
+'-c
+"expressionSSDstore"
+neutral| 2.805473e+10 2.817459e+10 2.812366e+10 2.824039e+10 2.804934e+10 2.8..
+EL     | 2.816221e+10 2.810494e+10 2.817632e+10 2.831022e+10 2.828687e+10 2.8..
+EC     | 2.810351e+10 2.808619e+10 2.804191e+10 2.826973e+10 2.80242e+10 2.81..
+EO     | 2.808614e+10 2.816757e+10 2.827523e+10 2.825795e+10 2.824931e+10 2.8..
+ES     | 2.814238e+10 2.808518e+10 2.810008e+10 2.814042e+10 2.810973e+10 2.8..
+EF     | 2.805319e+10 2.810667e+10 2.812786e+10 2.810174e+10 2.809293e+10 2.8..
+[developer] version 1.2.0
+[developer] loading...
+[developer] port already set, not changing
+[developer] successfully loaded
+[developer] connect to: http://ren-xiangs-mbp-2017.local:5001/ax or http://localhost:5001/ax with your web browser
+
+"Expressions"
+`neutral`EL`EC`EO`ES`EF
+"neutral expression euclidean distance from faces centroid"
+2.805473e+10 2.817459e+10 2.812366e+10 2.824039e+10 2.804934e+10 2.819583e+10 2.808302e+10 2.80871e+10 2.807522e+10 2.807375e+10 2.821945e+10 2.811162e+10 2.824577e+10 2.8230..
+"EL expression euclidean distance from faces centroid"
+2.816221e+10 2.810494e+10 2.817632e+10 2.831022e+10 2.828687e+10 2.825125e+10 2.809913e+10 2.827628e+10 2.817373e+10 2.804389e+10 2.823078e+10 2.810213e+10 2.80859e+10 2.8259..
+"EC expression euclidean distance from faces centroid"
+2.810351e+10 2.808619e+10 2.804191e+10 2.826973e+10 2.80242e+10 2.813656e+10 2.827442e+10 2.810153e+10 2.814479e+10 2.816734e+10 2.805268e+10 2.809639e+10 2.813017e+10 2.8107..
+"EO expression euclidean distance from faces centroid"
+2.808614e+10 2.816757e+10 2.827523e+10 2.825795e+10 2.824931e+10 2.809725e+10 2.827087e+10 2.815939e+10 2.817872e+10 2.804604e+10 2.8046e+10 2.822312e+10 2.813031e+10 2.80869..
+"ES expression euclidean distance from faces centroid"
+2.814238e+10 2.808518e+10 2.810008e+10 2.814042e+10 2.810973e+10 2.806971e+10 2.826197e+10 2.815946e+10 2.804147e+10 2.830985e+10 2.804674e+10 2.810737e+10 2.810246e+10 2.812..
+"EF expression euclidean distance from faces centroid"
+2.805319e+10 2.810667e+10 2.812786e+10 2.810174e+10 2.809293e+10 2.814363e+10 2.811524e+10 2.813189e+10 2.809909e+10 2.806652e+10 2.806757e+10 2.83654e+10 2.803687e+10 2.8164..
+"standard deviation of each expression"
+neutral| 7.085146e+07
+EL     | 8.055559e+07
+EC     | 7.928588e+07
+EO     | 7.590538e+07
+ES     | 8.017473e+07
+EF     | 8.276381e+07
+"mean distance of each expression"
+neutral| 2.81467e+10 
+EL     | 2.815656e+10
+EC     | 2.815379e+10
+EO     | 2.814902e+10
+ES     | 2.816142e+10
+EF     | 2.816068e+10
+"median distance of each expressions"
+neutral| 2.813283e+10
+EL     | 2.813245e+10
+EC     | 2.813337e+10
+EO     | 2.812977e+10
+ES     | 2.813231e+10
+EF     | 2.813806e+10
+"mean distance of mean of expressions"
+2.815469e+10
+"distance bias of mean of each expression"
+neutral| -7988885 
+EL     | 1863298  
+EC     | -906442.1
+EO     | -5675080 
+ES     | 6723238  
+EF     | 5983871  
+"mean distance of median of each expression"
+2.813313e+10
+"distance bias of median of each expression"
+neutral| -302673.1
+EL     | -676823.9
+EC     | 236518.5 
+EO     | -3366088 
+ES     | -823611.5
+EF     | 4932678  
+"max distance of each expression"
+neutral| 2.832166e+10
+EL     | 2.833631e+10
+EC     | 2.831518e+10
+EO     | 2.832417e+10
+ES     | 2.833055e+10
+EF     | 2.83654e+10 
+"min distance of each expression"
+neutral| 2.803192e+10
+EL     | 2.803584e+10
+EC     | 2.80242e+10 
+EO     | 2.802965e+10
+ES     | 2.804147e+10
+EF     | 2.803687e+10
+"difference between max and min distance of each expression"
+neutral| 2.897441e+08
+EL     | 3.004682e+08
+EC     | 2.909836e+08
+EO     | 2.945175e+08
+ES     | 2.890813e+08
+EF     | 3.285372e+08
+"smallest distance from expression centroid, for expression samples"
+neutral| 1502652 2943237  3401594  6431431  7435093  7442708  8325541  11340019 11819603 13381736
+EL     | 3697097 4881755  4882036  5657699  6513875  7006089  17174726 17774916 19759894 23802568
+EC     | 380252  4952080  8677907  8996404  12435805 13554514 17224532 23610910 27110679 27802198
+EO     | 2882698 5255754  10371546 10650571 12671676 13329272 15855451 18549140 18704108 19799271
+ES     | 1952529 12612482 15893335 16837823 18846244 19033384 20996132 21646111 29107531 29904053
+EF     | 2421292 3409456  4199771  7829856  8729926  17044174 21788495 23435254 28781813 29235699
+"indexes for above calculation"
+17 26 54 41 51 52 62 45 28 70
+46 32 62 0  22 36 8  14 2  51
+26 19 45 8  59 9  5  12 41 65
+30 51 7  54 45 23 15 1  12 56
+7  43 34 25 16 0  3  48 38 17
+42 35 13 23 57 5  17 46 7  25
+q)
