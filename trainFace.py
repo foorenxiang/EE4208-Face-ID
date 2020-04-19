@@ -456,6 +456,8 @@ print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
 
+
+'''
 #####HistGradientBoostingClassifier#####
 from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingClassifier as classifier
@@ -483,6 +485,7 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
+'''
 
 #####K-NN, n=1#####
 from sklearn.neighbors import KNeighborsClassifier as classifier
