@@ -7,9 +7,15 @@
   
 ### Video demos:
 - Nearest Neighbour Classifier (SSD)
-  - https://youtu.be/bO-e7UspUXU
+  - Extreme recognition of single person
+    - https://youtu.be/bO-e7UspUXU 
+  - Recognition of people within and outside the recognised list. Tested using people found on Google Images
+    - https://youtu.be/kXa6aWl-G8w
 - Support Vector Machine Classifer (SVM)
-  - https://youtu.be/Zb_AllFWQ64
+  - Demo oriented around extreme recognition of single person
+    - https://youtu.be/Zb_AllFWQ64
+  - Recognition of people within and outside the recognised list. Tested using people found on Google Images
+    - https://youtu.be/3WzFCZcaHyI
   
 Classifiers Tested during training step:
 - Nearest Neighbour Classifier (SSD)
@@ -22,10 +28,19 @@ Classifiers Tested during training step:
 - Histogram Gradient Boosting
 - K-NN 
   
-429 images of 83 people with varying expressions
+429 images of 83 people with varying expressions.
+  
+Images and video-stream are zero-meaned to deal with lighting changes.
+  
+SSD used to determine if person in frame is not within training set.
   
 EE4208 Intelligent System Design Module Assignment 1 Group Coursework
+
+Due to privacy concerns, the training dataset and generated models are not included in this repository.  
+To fit the PCA principal components and classification models, place your photos in a folder named `input`, with the notation: `person_expression.jpg`  
+E.g. `./input/john_smiling.jpg`
   
+
 Team Members:
 - Calista Lee
 - Chew Simin
@@ -38,3 +53,7 @@ Team Members:
 - OpenCV-Python  
 - Python-ELM by D. Lambert  
   - https://github.com/dclambert/Python-ELM
+
+### Dataset Used:
+- CAS-PEAL Face Database (neutral and expressions sets)
+  - http://www.jdl.ac.cn/peal/
