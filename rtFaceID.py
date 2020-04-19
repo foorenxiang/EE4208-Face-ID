@@ -62,11 +62,22 @@ try:
 except KeyError:
     dim = (100, 100) #width, height
 
-unknownPersonErrorThreshold = 210000
+unknownPersonErrorThreshold = 450000
+
+skipFrameThreshold = 1
+skipFrame = skipFrameThreshold-1
 
 while 1:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
+    
+    skipFrame+=1
+    if skipFrame == skipFrameThreshold:
+        skipFrame = 0
+
+    if skipFrame != 0:
+        continue
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = faceCascade.detectMultiScale(
