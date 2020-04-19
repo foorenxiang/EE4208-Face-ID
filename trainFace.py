@@ -49,11 +49,12 @@ useZeroMean = True
 dim = (100, 100) #width, height
 
 #set to false to update models and dictionaries
-reTrainAll = False
+reTrainAll = True
 faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
+faceDictLoad = True
 processedFiles = list()
 
 if faceDictLoad == False:
@@ -132,6 +133,7 @@ if pcaModelLoad == False:
     print("Performing PCA on dataset")
     pcaModel = PCA(n_components=0.95)
     facesPDF = pd.DataFrame(list(iVectorDict.values()))
+    dump(facesPDF, 'facesPDF.bin')
     print("number of detected faces")
     print(len(facesPDF))
     if (len(facesPDF) == 0):
@@ -151,6 +153,8 @@ if pcaDataLoad == False:
         print(person)
         print(pcDict[person])
 
+    dump(pcDict, 'pcDict.bin')
+    ignoreKeys = ['useZeroMean', 'dim', 'facesCentroid']
     try:
         del accumulator
     except:
@@ -576,6 +580,10 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
+<<<<<<< HEAD
+=======
+
+>>>>>>> ac161f4bcd52dfb5e54dd2f753f2c4ebd27d7d4a
 
 #####calculate SSD for each expression#####
 expressionSSDstore = {}
@@ -594,6 +602,7 @@ for expression in expressions:
     print("mean:")
     print(mean(expressionSSDstore[expression]))
     print("\n")
+
 dump(expressionSSDstore, 'expressionSSDstore.bin')
 
 #####SVM for expressions#####
