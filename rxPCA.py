@@ -8,8 +8,8 @@ def strFloat(floatVal):
 	return "{0:.2f}".format(round(floatVal,2))
 
 def EVD(X):
-    # s, U = np.linalg.eig(X)
-    s, U = eigsh(X,k=10000)
+    # s, U = eigsh(X,k=X.shape[0])
+    s, U = eigh(X, turbo = True, overwrite_a = True, overwrite_b = True)
     idx = s.argsort()[::-1] # decreasing order
     return s[idx], U[:,idx]
 
