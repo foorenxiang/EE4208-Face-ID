@@ -155,7 +155,7 @@ if pcaDataLoad == False:
         print(person)
         print(pcDict[person])
     elapsed = time.time() - t
-    print("Dataset projection time: " + str(t))
+    print("Dataset projection time: " + str(elapsed) + 'seconds')
     print(elapsed)
     dump(pcDict, 'pcDict.bin')
     ignoreKeys = ['useZeroMean', 'dim', 'facesCentroid']

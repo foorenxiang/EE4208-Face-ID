@@ -38,8 +38,7 @@ class PCA:
 		t = time.time()
 		eigValues, eigVectors = EVD(covMatrix)
 		elapsed = time.time() - t
-		print("Eigendecomposition time: " + str(t))
-		print(elapsed)
+		print("Eigendecomposition time: " + str(elapsed) +' seconds')
 		eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 
 		# dataset -= dataset.mean(axis=0)
