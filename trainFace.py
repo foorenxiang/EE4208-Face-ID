@@ -56,6 +56,8 @@ pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
 faceDictLoad = True
+showIndividualPredictions = True
+
 processedFiles = list()
 
 if faceDictLoad == False:
@@ -283,12 +285,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -312,12 +316,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -338,12 +344,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -364,12 +372,14 @@ predictions = model.predict(np.array(testX))
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -390,12 +400,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -420,12 +432,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -446,12 +460,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -471,12 +487,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -496,12 +514,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -521,12 +541,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -549,12 +571,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -575,12 +599,14 @@ predictions = model.predict(testX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, testy):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -624,12 +650,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -650,12 +678,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -676,12 +706,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -702,12 +734,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -728,12 +762,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -754,12 +790,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -780,12 +818,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -806,12 +846,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -832,12 +874,14 @@ predictions = model.predict(expressionsTestX)
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
@@ -858,12 +902,14 @@ predictions = model.predict(np.array(expressionsTestX))
 rights, wrongs = 0,0
 for prediction, actual in zip(predictions, expressionsTesty):
     if prediction == actual:
-        # print(prediction)
-        # print("Correct!")
+        if showIndividualPredictions:
+            print(prediction)
+            print("Correct!")
         rights+=1
     else:
-        # print(prediction + ' vs ' + actual)
-        # print("Wrong!")
+        if showIndividualPredictions:
+            print(prediction + ' vs ' + actual)
+            print("Wrong!")
         wrongs+=1
 
 print("Rights: " + str(rights))
