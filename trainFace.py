@@ -16,6 +16,7 @@ from rxPCA import PCA
 import numpy as np
 import pandas as pd
 from joblib import dump, load
+import time
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -49,7 +50,7 @@ useZeroMean = True
 dim = (100, 100) #width, height
 
 #set to false to update models and dictionaries
-reTrainAll = True
+reTrainAll = False
 faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
@@ -146,13 +147,16 @@ else:
 
 if pcaDataLoad == False:
     print("Calcuating Principal Components of faces")
+    t = time.time()
     for person, personIndex in zip(iVectorDict, range(len(iVectorDict))):
         print("Image Index:")
         print(personIndex)
         pcDict[person] = pcaModel.transform(pd.DataFrame(list(iVectorDict[person])))
         print(person)
         print(pcDict[person])
-
+    elapsed = time.time() - t
+    print("Dataset projection time: " + str(t))
+    print(elapsed)
     dump(pcDict, 'pcDict.bin')
     ignoreKeys = ['useZeroMean', 'dim', 'facesCentroid']
     try:
@@ -294,7 +298,10 @@ print("\n")
 
 #####Adaboost#####
 from sklearn.ensemble import AdaBoostClassifier as classifier
-model = classifier(n_estimators=100, random_state=0)
+from sklearn.tree import DecisionTreeClassifier
+model = classifier(base_estimator = DecisionTreeClassifier(max_depth=2),
+    n_estimators=600,
+    learning_rate=1, random_state=0)
 model.fit(trainX,trainy)
 dump(model, 'adaBoostModel.bin')
 
@@ -458,7 +465,7 @@ model = classifier(n_neighbors=1)
 model.fit(trainX,trainy)
 dump(model, 'SADModel.bin')
 
-print("##########Testing person identification with K-NN model, n = 1##########")
+print("##########Testing person identification with K-NN model, K = 1 (SSD)##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -483,7 +490,7 @@ model = classifier(n_neighbors=5)
 model.fit(trainX,trainy)
 dump(model, '5NNModel.bin')
 
-print("##########Testing person identification with K-NN model, n = 5##########")
+print("##########Testing person identification with K-NN model, K = 5##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -508,7 +515,7 @@ model = classifier(n_neighbors=3)
 model.fit(trainX,trainy)
 dump(model, '3NNModel.bin')
 
-print("##########Testing person identification with K-NN model, n = 3##########")
+print("##########Testing person identification with K-NN model, K = 3##########")
 predictions = model.predict(testX)
 
 rights, wrongs = 0,0
@@ -580,10 +587,6 @@ print("Rights: " + str(rights))
 print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
-<<<<<<< HEAD
-=======
-
->>>>>>> ac161f4bcd52dfb5e54dd2f753f2c4ebd27d7d4a
 
 #####calculate SSD for each expression#####
 expressionSSDstore = {}
@@ -604,6 +607,36 @@ for expression in expressions:
     print("\n")
 
 dump(expressionSSDstore, 'expressionSSDstore.bin')
+
+#####Adaboost for expressions#####
+from sklearn.ensemble import AdaBoostClassifier as classifier
+from sklearn.tree import DecisionTreeClassifier
+model = classifier(base_estimator = DecisionTreeClassifier(max_depth=2),
+    n_estimators=600,
+    learning_rate=1, random_state=0)
+model.fit(expressionsTrainX,expressionsTrainy)
+dump(model, 'AdaboostExpressionsModel.bin')
+
+
+print("##########Testing Expressions Adaboost model##########")
+predictions = model.predict(expressionsTestX)
+
+rights, wrongs = 0,0
+for prediction, actual in zip(predictions, expressionsTesty):
+    if prediction == actual:
+        # print(prediction)
+        # print("Correct!")
+        rights+=1
+    else:
+        # print(prediction + ' vs ' + actual)
+        # print("Wrong!")
+        wrongs+=1
+
+print("Rights: " + str(rights))
+print("Wrongs:" + str(wrongs))
+print("Score: " + str(rights/(rights+wrongs)*100) + "%")
+print("\n")
+>>>>>>> 5e07b9c... fixed PCA
 
 #####SVM for expressions#####
 from sklearn.svm import SVC as classifier
@@ -716,7 +749,7 @@ model.fit(expressionsTrainX,expressionsTrainy)
 dump(model, '10NNExpressionsModel.bin')
 
 
-print("##########Testing expression K-NN model, n = 10##########")
+print("##########Testing expression K-NN model, K = 10##########")
 predictions = model.predict(expressionsTestX)
 
 rights, wrongs = 0,0
@@ -742,7 +775,7 @@ model.fit(expressionsTrainX,expressionsTrainy)
 dump(model, '20NNExpressionsModel.bin')
 
 
-print("##########Testing expression K-NN model, n = 20##########")
+print("##########Testing expression K-NN model, K = 20##########")
 predictions = model.predict(expressionsTestX)
 
 rights, wrongs = 0,0
@@ -768,7 +801,7 @@ model.fit(expressionsTrainX,expressionsTrainy)
 dump(model, '15NNExpressionsModel.bin')
 
 
-print("##########Testing expression K-NN model, n = 15##########")
+print("##########Testing expression K-NN model, K = 15##########")
 predictions = model.predict(expressionsTestX)
 
 rights, wrongs = 0,0
@@ -794,7 +827,7 @@ model.fit(expressionsTrainX,expressionsTrainy)
 dump(model, '7NNExpressionsModel.bin')
 
 
-print("##########Testing expression K-NN model, n = 7##########")
+print("##########Testing expression K-NN model, K = 7##########")
 predictions = model.predict(expressionsTestX)
 
 rights, wrongs = 0,0

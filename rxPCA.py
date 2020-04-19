@@ -2,16 +2,16 @@ import numpy as np
 import pandas as pd
 from scipy.linalg import eigh
 from scipy.sparse.linalg import eigsh
+import time
 
 def strFloat(floatVal):
 	return "{0:.2f}".format(round(floatVal,2))
 
 def EVD(X):
-	from scipy.sparse.linalg import eigsh
-	# s, U = np.linalg.eig(X)
-	s, U = eigsh(X,k=100)
-	idx = s.argsort()[::-1] # decreasing order
-	return s[idx], U[:,idx]
+    # s, U = np.linalg.eig(X)
+    s, U = eigsh(X,k=10000)
+    idx = s.argsort()[::-1] # decreasing order
+    return s[idx], U[:,idx]
 
 class PCA:
 	def __init__(self, n_components = 0.9):
@@ -30,37 +30,50 @@ class PCA:
 		#deduct mean of each feature from dataset
 		# self.datasetMean = np.mean(dataset, axis=0)
 		# dataset = dataset - self.datasetMean
+
+		dataset=pd.DataFrame(dataset).to_numpy()
 		dataset -= dataset.mean(axis=0)
 		dataset /= np.std(dataset,axis=0)
-		dataset = dataset.to_numpy()
-		print('dataset type')
-		print(type(dataset))
-		try:
-			dataset.shape
-			print('dataset shape')
-			print(dataset.shape)
-		except:
-			print('dataset has no shape property')
-		
-		#find covariance matrix
-		# covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
 		covMatrix = dataset.T.dot(dataset) / dataset.shape[0]
-		print('covMatrix type')
-		print(type(covMatrix))
-		try:
-			covMatrix.shape
-			print('covMatrix shape')
-			print(covMatrix.shape)
-		except:
-			print('covMatrix has no shape property')
-
-		#calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
-		# eigValues, eigVectors = eigh(covMatrix)
+		t = time.time()
 		eigValues, eigVectors = EVD(covMatrix)
+		elapsed = time.time() - t
+		print("Eigendecomposition time: " + str(t))
+		print(elapsed)
 		eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
+
+		# dataset -= dataset.mean(axis=0)
+		# dataset /= np.std(dataset,axis=0)
+		# dataset = dataset.to_numpy()
+		# print('dataset type')
+		# print(type(dataset))
+		# try:
+		# 	dataset.shape
+		# 	print('dataset shape')
+		# 	print(dataset.shape)
+		# except:
+		# 	print('dataset has no shape property')
+		
+		# #find covariance matrix
+		# # covMatrix = np.dot(dataset.transpose(), dataset)/(dataset.shape[1])
+		# covMatrix = dataset.T.dot(dataset) / dataset.shape[0]
+		# print('covMatrix type')
+		# print(type(covMatrix))
+		# try:
+		# 	covMatrix.shape
+		# 	print('covMatrix shape')
+		# 	print(covMatrix.shape)
+		# except:
+		# 	print('covMatrix has no shape property')
+
+		# #calculate eigen decomposition of covariance matrix (sort eigenvalues in descending order)
+		# # eigValues, eigVectors = eigh(covMatrix)
+		# eigValues, eigVectors = EVD(covMatrix)
+		# eigValues, eigVectors = np.real(eigValues), np.real(eigVectors)
 		print("eigVectors.shape")
 		print(eigVectors.shape)
-		absEigValues = list(map(lambda x: abs(x), eigValues))
+		# absEigValues = list(map(lambda x: abs(x), eigValues))
+		absEigValues = eigValues
 		principalComponents = []
 		for eigValue, absEigValue, eigVector in sorted(zip(eigValues, absEigValues, eigVectors), key=lambda x: x[1], reverse = True):
 			principalComponents.append({
@@ -101,6 +114,9 @@ class PCA:
 			print('inputPDF type: ' + str(type(inputPDF)))
 			raise Exception('inputPDF should be a pandas DataFrame!')
 
+		#normalise test data
+		inputPDF=pd.DataFrame(inputPDF).to_numpy()
+		inputPDF -= inputPDF.mean(axis=0)
 		#check if inputPDF should be transposed
 		try:
 			self.reducedPrincipalComponents[0]['eigVector'].dot(inputPDF)[0]
@@ -108,9 +124,9 @@ class PCA:
 			inputPDF = inputPDF.T
 
 		#normalise test data
-		inputPDF -= self.datasetMean
+		# inputPDF -= self.datasetMean
 		#project test data to eigenspace
-		inputPDF = inputPDF.to_numpy()
+		# inputPDF = inputPDF.to_numpy()
 		if np.isnan(inputPDF).any():
 			print("inputPDF NAN")
 			raise ValueError
