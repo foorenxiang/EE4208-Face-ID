@@ -10,12 +10,12 @@
   - Extreme recognition of single person
     - https://youtu.be/bO-e7UspUXU 
   - Recognition of people within and outside the recognised list. Tested using people found on Google Images
-    - https://youtu.be/kXa6aWl-G8w
+    - https://youtu.be/FJaFxk28X5Y
 - Support Vector Machine Classifer (SVM)
   - Demo oriented around extreme recognition of single person
     - https://youtu.be/Zb_AllFWQ64
   - Recognition of people within and outside the recognised list. Tested using people found on Google Images
-    - https://youtu.be/3WzFCZcaHyI
+    - https://youtu.be/3laCd__XjS4
   
 Classifiers Tested during training step:
 - Nearest Neighbour Classifier (SSD)
