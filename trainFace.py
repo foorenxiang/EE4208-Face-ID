@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import dlib
 from imutils import face_utils
 
-# from sklearn.decomposition import PCA
 from rxPCA import PCA
 import numpy as np
 import pandas as pd
