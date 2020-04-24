@@ -57,6 +57,7 @@ pcaDataLoad = not reTrainAll
 
 disableTrainTestSplit = True
 showIndividualPredictions = False
+displayUnstableDetects = False
 
 processedFiles = list()
 
@@ -118,9 +119,10 @@ if faceDictLoad == False:
     for person in unstableDetects:
         print(person)
         # display images with unstable detections
-        plt.figure(figsize=(8,8))
-        plt.imshow(faceDict[person], cmap='gray')
-        plt.show()      
+        if displayUnstableDetects:
+            plt.figure(figsize=(8,8))
+            plt.imshow(faceDict[person], cmap='gray')
+            plt.show()      
 
     print("Number of faces in faceDict: " + str(len(faceDict)))
     dump(faceDict, 'faceDict.bin')
