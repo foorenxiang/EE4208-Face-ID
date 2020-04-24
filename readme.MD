@@ -16,6 +16,41 @@
     - https://youtu.be/Zb_AllFWQ64
   - Recognition of people within and outside the recognised list. Tested using people found on Google Images
     - https://youtu.be/3laCd__XjS4
+
+### Scripts to run:
+- trainFace.py
+  - Run this script to:
+    - Fit the PCA model
+    - Project faces in training images to eigenspace
+    - Train/test person and expression classifiers
+- rtFaceID.py
+  - Run this script to perform real-time face detection
+- videoFaceID.py
+  - Run this script to perform face detection on a video file
+
+### Custom PCA Module
+- rxPCA.py
+
+### Data pre-processing scripts:
+- adjustDict.py
+  - Drop eig coordinates of people to be removed from training set (reduce number of person classes)
+- adjustDict(Remove expressions).py
+  - Drop eigen coordinates of certain expressions (remove invalid expression classes. e.g. denoting head rotation instead of actual expressions)
+- centroidFinder.py
+  - Calculate eigen coordinate centroid for updating old pcDict.bin files without centroid data
+- faceCropper.py
+  - Tool for cropping faces from images
+- reSizer.py
+  - Image resizer script
+- rxPCAtest.py
+  - Script for testing custom PCA module
+- suffixPhotos.py
+  - Script for adding suffix to photo names
+
+### Expression Analysis script
+- expressionsAnalysis.q
+  - Perform exploratory data analysis on eigen coordinates of expressions
+  - Expression distribution can be plotted using Kx Developer
   
 Classifiers Tested during training step:
 - Nearest Neighbour Classifier (SSD)
