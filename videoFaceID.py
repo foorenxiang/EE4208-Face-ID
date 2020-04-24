@@ -4,7 +4,13 @@ https://towardsdatascience.com/a-guide-to-face-detection-in-python-3eab0f6b9fc1
 https://medium.com/@sebastiannorena/pca-principal-components-analysis-applied-to-images-of-faces-d2fc2c083371
 '''
 
-#use python3 command to execute!
+'''
+Historical video face recognition script.
+
+Prior to using this script, run trainFace.py to fit PCA model and classifier
+
+use python3 command to execute!
+'''
 
 import cv2
 

@@ -4,7 +4,62 @@ https://towardsdatascience.com/a-guide-to-face-detection-in-python-3eab0f6b9fc1
 https://medium.com/@sebastiannorena/pca-principal-components-analysis-applied-to-images-of-faces-d2fc2c083371
 '''
 
-#use python3 command to execute!
+'''
+PCA model and classifiers training script
+
+Run this script to train the PCA model, person and expression classifiers
+
+This training script will generate and save the following files to disk:
+faceDict.bin: subimages of input faces, as 2D Numpy arrays
+iVectorDict.bin: flattened subimages of input faces, as 1D Numpy arrays
+facesPDF.bin: flattened subimages of input faces, as Pandas Dataframe
+pcaModel.bin: fitted PCA model
+pcDict.bin: eigencoordinates of all faces processed with PCA, with additional keys input photo dimensions, zero mean setting (lighting compensation) and eigenspace centroid of all faces, as Python dictionary
+svcModel.bin: trained SVM person classifier
+adaBoostModel.bin: trained Adaboost person classifier
+gradBoostModel.bin: trained gradient boosting person classifier
+XGBoostModel.bin: trained XGBoost person classifier
+randomForestModel.bin: trained random forest person classifier
+stackingModel.bin: trained stacking generalizer person classifier
+SSDModel.bin: trained Nearest Neighbour person classifier
+3NNModel.bin: trained Nearest Neighbour person classifier, K = 3
+5NNModel.bin: trained Nearest Neighbour person classifier, K = 5
+ELMMLPModel.bin: trained ELM (MLP Hidden Layer) person classifier
+ELMRBFModel.bin: trained ELM (RBF Hidden Layer) person classifier
+expressionSSDstore.bin: nested list of expressions, containing list of SSD of eigencoordinates to centroid of that particular expressions
+AdaboostExpressionsModel.bin: trained Adaboost expression classifier
+svcExpressionsModel.bin: trained SVM expression classifier
+rfExpressionsModel.bin: trained SVM expression classifier
+centroidKNNExpressionsModel.bin: trained centroid based K-NN  expression classifier
+SSDExpressionsModel.bin: Nearest Neighbour classifier
+7NNExpressionsModel.bin: K-NN expression classifier, K = 7
+10NNExpressionsModel.bin: K-NN expression classifier, K = 10
+15NNExpressionsModel.bin: K-NN expression classifier, K = 15
+20NNExpressionsModel.bin: K-NN expression classifier, K = 20
+20NNExpressionsModel.bin: K-NN expression classifier, K = 20
+XGBoostExpression.bin: trained XGBoost expression classifer
+
+
+Script variables used for settings: 
+    reTrainAll: set to true to
+        Run face cropping from input folder
+        Fit PCA model
+        Project all faces in input photos to eigenspace
+    faceDictLoad: load cropped face images instead of scanning input photos folder
+    pcaModelLoad: load pre-fitted PCA model. PCA expected dimensions will be loaded as well. If photos were zero-meaned, the setting will be loaded as well.
+    pcaDataLoad: load eigencoordinates of faces in training set
+    disableTrainTestSplit: all input photos will be used to train classifiers. Enable this mode when training classifiers to be deployed for real-time/historical video detection. Disable this mode if evaluating classifier performance using input photos
+    showIndividualPredictions: display each individual prediction by classifiers for debugging
+    displayUnstableDetects: display flagged subimages if mulitple faces are detected in an input photo
+
+Person and expression classifiers are always retrained when this script is run.
+
+To exclude certain people for person classifiers, make use of script 'adjustDict.py'.
+Indicate which people are to be removed in that script.
+Train person classifiers on the reduced person set by placing the adjusted pcDict.bin in the same directory while setting reTrainAll parameter in this script to False 
+
+use python3 command to execute!
+'''
 
 import cv2
 import matplotlib.pyplot as plt
@@ -30,7 +85,10 @@ smileCascade = cv2.CascadeClassifier(smilePath)
 
 import glob
 import random
+
+# folder where training images are located
 path = "./input/"
+# extension of training images
 fileExt = ".jpg"
 files = glob.glob(path+"*"+fileExt)
 files = list(map(lambda file: file.strip(), files)) #strip white spaces from filename
@@ -40,7 +98,6 @@ unstableDetects = list()
 faceDict = dict() #stores subimages of detected faces
 iVectorDict = dict() #stores vectors of faces in image space
 pcDict = dict() #stores principal components of each face in eigenspace
-fftDict = dict()
 
 #use zero mean
 useZeroMean = True
@@ -49,12 +106,13 @@ useZeroMean = True
 dim = (100, 100) #width, height
 
 #set to false to update models and dictionaries
-reTrainAll = False
+reTrainAll = True
 faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
-disableTrainTestSplit = True
+faceDictLoad = True
+disableTrainTestSplit = False
 showIndividualPredictions = False
 displayUnstableDetects = False
 
@@ -160,7 +218,6 @@ if pcaDataLoad == False:
     elapsed = time.time() - t
     print("Dataset projection time: " + str(elapsed) + 'seconds')
     print(elapsed)
-    dump(pcDict, 'pcDict.bin')
     ignoreKeys = ['useZeroMean', 'dim', 'facesCentroid']
     try:
         del accumulator
@@ -492,7 +549,7 @@ print("\n")
 from sklearn.neighbors import KNeighborsClassifier as classifier
 model = classifier(n_neighbors=1)
 model.fit(trainX,trainy)
-dump(model, 'SADModel.bin')
+dump(model, 'SSDModel.bin')
 
 print("##########Testing person identification with K-NN model, K = 1 (SSD)##########")
 predictions = model.predict(testX)
@@ -762,14 +819,14 @@ print("Wrongs:" + str(wrongs))
 print("Score: " + str(rights/(rights+wrongs)*100) + "%")
 print("\n")
 
-#####expression SAD#####
+#####expression SSD#####
 from sklearn.neighbors import KNeighborsClassifier as classifier
 model = classifier(n_neighbors=1)
 model.fit(expressionsTrainX,expressionsTrainy)
-dump(model, 'SADExpressionsModel.bin')
+dump(model, 'SSDExpressionsModel.bin')
 
 
-print("##########Testing expression SAD model##########")
+print("##########Testing expression SSD model##########")
 predictions = model.predict(expressionsTestX)
 
 rights, wrongs = 0,0
@@ -906,7 +963,7 @@ print("\n")
 from xgboost import XGBClassifier as classifier
 model = classifier()
 model.fit(np.array(expressionsTrainX),np.array(expressionsTrainy))
-dump(model, 'gradBoostModel.bin')
+dump(model, 'XGBoostExpression.bin')
 
 
 print("##########Testing expression XGBoost model##########")
