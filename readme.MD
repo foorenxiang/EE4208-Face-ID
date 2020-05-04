@@ -19,7 +19,7 @@
 
 ### Docker Image
 This app is available as a docker image. To execute:  
-`docker pull foorenxiang/faceid`  
+`docker pull foorenxiang/faceid:v0.1`  
 `cd ~/opencv/`  
 `python3 trainFace.py`
 
