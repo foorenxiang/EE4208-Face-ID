@@ -111,7 +111,6 @@ faceDictLoad = not reTrainAll
 pcaModelLoad = not reTrainAll
 pcaDataLoad = not reTrainAll
 
-faceDictLoad = True
 disableTrainTestSplit = False
 showIndividualPredictions = False
 displayUnstableDetects = False
