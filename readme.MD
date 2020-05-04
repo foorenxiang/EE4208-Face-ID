@@ -18,7 +18,7 @@
     - https://youtu.be/3laCd__XjS4
 
 ### Docker Image
-This app is available as a docker image. To execute:  
+This app is available as a docker image, for fitting PCA and training classifiers. To execute:  
 `docker pull foorenxiang/faceid`  
 `docker run -ti --rm faceid`  
 `cd ~/opencv/`  
