@@ -39,7 +39,7 @@ This app is available as a docker image.
 
 ### Data pre-processing scripts:
 - adjustDict.py
-  - Drop eig coordinates of people to be removed from training set (reduce number of person classes)
+  - Drop eigen coordinates of people to be removed from training set (reduce number of person classes)
 - adjustDict(Remove expressions).py
   - Drop eigen coordinates of certain expressions (remove invalid expression classes. e.g. denoting head rotation instead of actual expressions)
 - centroidFinder.py
