@@ -35,7 +35,7 @@ eyeCascade = cv2.CascadeClassifier(eyePath)
 smileCascade = cv2.CascadeClassifier(smilePath)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
-video_capture = cv2.VideoCapture('test1.mov')
+video_capture = cv2.VideoCapture('/Users/foorx/Misc/' + 'Rafferty - Apple Pie.mp4')
 
 #Fitted PCA model
 print("Loading PCA model from disk")
@@ -68,7 +68,8 @@ try:
 except KeyError:
     dim = (100, 100) #width, height
 
-unknownPersonErrorThreshold = 650000
+# unknownPersonErrorThreshold = 850000
+unknownPersonErrorThreshold = 200000
 
 skipFrameThreshold = 2
 skipFrame = skipFrameThreshold-1
@@ -99,8 +100,8 @@ while 1:
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.7,
-        minNeighbors=7,
-        minSize=(450, 450),
+        minNeighbors=3,
+        minSize=(150, 150),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 
@@ -179,7 +180,7 @@ while 1:
             guess = guess.split('_')[0]
             print("Guessed person: " + guess)
             print("SSD Error: " + str(currentError))
-            cv2.putText(frame, guess ,(x, y), font, 1,(0,255,0),5)
+            cv2.putText(frame, guess ,(x, y), font, 1,(255,0,0),5)
 
         if classificationMethod == 'SVM':
             #using SVM to classify person
