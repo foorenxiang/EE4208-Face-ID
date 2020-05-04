@@ -17,6 +17,12 @@
   - Recognition of people within and outside the recognised list. Tested using people found on Google Images
     - https://youtu.be/3laCd__XjS4
 
+### Docker Image
+This app is available as a docker image.
+`docker pull foorenxiang/faceid` 
+`cd ~/opencv/` 
+`python3 trainFace.py` 
+
 ### Scripts to run:
 - trainFace.py
   - Run this script to:
